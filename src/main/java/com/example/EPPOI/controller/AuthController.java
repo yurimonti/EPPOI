@@ -11,11 +11,13 @@ import com.example.EPPOI.security.CustomAuthenticationFilter;
 import com.example.EPPOI.security.JwtTokenProvider;
 import com.example.EPPOI.security.TokenManager;
 import com.example.EPPOI.service.GeneralUserService;
+import com.example.EPPOI.service.TouristServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,14 +26,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,9 @@ public class AuthController {
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final GeneralUserService userService;
     private final UserRoleRepository userRoleRepository;
+    private final TouristServiceImpl touristService;
+
+
     @Data
     private static class UserBody{
         private String username;
@@ -55,8 +59,10 @@ public class AuthController {
         return ResponseEntity.ok(tokens);
     }
 
+    //TODO controllare ruoli funzionamento
     @PostMapping("/registration")
-    public ResponseEntity<?> signup(@RequestBody Map<String,Object> body) {
+    public ResponseEntity<?> signup(@RequestBody Map<String,Object> body, HttpServletRequest request)
+            throws UnsupportedEncodingException, MessagingException {
         String username = (String)body.get("username");
         String password = (String)body.get("password");
         String email = (String)body.get("email");
@@ -64,9 +70,28 @@ public class AuthController {
         String surname = (String)body.get("surname");
         UserRoleNode role = this.userRoleRepository.findByName("TOURIST");
         UserNode user = new TouristNode(name, surname, email, password, username,role);
-        this.userService.saveUser(user);
-        return ResponseEntity.ok().build();
+
+        //prova con il cast
+        touristService.register((TouristNode) user, getSiteURL(request));
+
+        return ResponseEntity.ok("register_success");
     }
+
+    private String getSiteURL(HttpServletRequest request) {
+        String siteURL = request.getRequestURL().toString();
+        return siteURL.replace(request.getServletPath(), "");
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifyUser(@Param("code") String code) {
+        if (this.touristService.verify(code)) {
+            return ResponseEntity.ok("verify_success");
+        } else {
+            return ResponseEntity.ok("verify_fail");
+        }
+    }
+
+
 
     @PostMapping("/refresh")
     public void refresh(HttpServletRequest request, HttpServletResponse response) throws IOException {

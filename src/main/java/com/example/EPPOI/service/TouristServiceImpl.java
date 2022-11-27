@@ -3,13 +3,21 @@ package com.example.EPPOI.service;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.model.user.TouristNode;
+import com.example.EPPOI.model.user.UserNode;
 import com.example.EPPOI.model.user.UserRoleNode;
 import com.example.EPPOI.repository.*;
 import com.example.EPPOI.utility.PoiParamsProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import net.bytebuddy.utility.RandomString;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +33,10 @@ public class TouristServiceImpl implements TouristService {
     private final UserRoleRepository userRoleRepository;
     private final EnteRepository enteRepository;
     private final RequestPoiRepository requestPoiRepository;
+
+    //email verification
+    private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
 
     private CityNode getCityFromPoi(PoiNode poi){
         return this.cityRepository.findAll().stream().filter(c -> c.getPOIs().contains(poi)).findFirst()
@@ -57,6 +69,74 @@ public class TouristServiceImpl implements TouristService {
     //TODO: to modify
     @Override
     public void logout(UUID uuid) {
+
+    }
+
+    /**
+     *
+     * @param user
+     * @param siteURL
+     * @throws UnsupportedEncodingException
+     * @throws MessagingException
+     */
+    //metodo aggiunto per email verification
+    public void register(TouristNode user, String siteURL)
+            throws UnsupportedEncodingException, MessagingException {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
+        String randomCode = RandomString.make(64);
+        user.setVerificationCode(randomCode);
+        user.setEnabled(false);
+
+        touristRepository.save(user);
+
+        sendVerificationEmail(user, siteURL);
+    }
+
+    private void sendVerificationEmail(TouristNode user, String siteURL)
+            throws MessagingException, UnsupportedEncodingException {
+        //TODO aggiorna dati se si cambia mail
+        String toAddress = user.getEmail();
+        String fromAddress = "eppoiProva2022@gmail.com";
+        String senderName = "EPPOI";
+        String subject = "Please verify your registration";
+        String content = "Dear [[name]],<br>"
+                + "Please click the link below to verify your registration:<br>"
+                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
+                + "Thank you,<br>"
+                + "EPPOI.";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+
+        content = content.replace("[[name]]", user.getName()+" "+user.getSurname());
+        String verifyURL = siteURL + "/auth/verify?code=" + user.getVerificationCode();
+
+        content = content.replace("[[URL]]", verifyURL);
+
+        helper.setText(content, true);
+
+        mailSender.send(message);
+    }
+
+    public boolean verify(String verificationCode) {
+        TouristNode user = this.touristRepository.findByVerificationCode(verificationCode);
+        log.info("User: {}",user);
+
+        if (user == null || user.isEnabled()) {
+            return false;
+        } else {
+            user.setVerificationCode(null);
+            user.setEnabled(true);
+            this.touristRepository.save(user);
+
+            return true;
+        }
 
     }
 

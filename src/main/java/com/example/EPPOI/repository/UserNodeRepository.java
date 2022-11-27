@@ -12,4 +12,5 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
     @Query("MATCH (n:UserNode) return n")
     List<UserNode> findAllUser();
     //UserNode findByUsername(String username);
+
 }

@@ -23,6 +23,10 @@ public abstract class UserNode {
     private String username;
     private List<UserRoleNode> roles;
 
+    //email verification elements needed
+    private String verificationCode;
+    private boolean enabled;
+
     public UserNode() {
         this.roles = new ArrayList<>();
     }
