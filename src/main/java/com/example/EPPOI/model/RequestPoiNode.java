@@ -2,7 +2,6 @@ package com.example.EPPOI.model;
 
 import com.example.EPPOI.model.user.UserNode;
 import com.example.EPPOI.utility.PoiParamsProvider;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -38,7 +37,7 @@ public class RequestPoiNode {
     public RequestPoiNode(PoiParamsProvider params, UserNode madeBy) {
         this.name = params.getName();
         this.description = params.getDescription();
-        this.coordinate = new CoordsNode(params.getCoordinate().getLatitude(), params.getCoordinate().getLongitude());
+        this.coordinate = new CoordsNode(params.getCoordinate().getLat(), params.getCoordinate().getLon());
         this.madeBy = madeBy;
     }
 }

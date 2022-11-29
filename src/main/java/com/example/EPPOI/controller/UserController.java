@@ -1,5 +1,6 @@
 package com.example.EPPOI.controller;
 
+import com.example.EPPOI.dto.CoordsDTO;
 import com.example.EPPOI.model.ItineraryNode;
 import com.example.EPPOI.model.PoiNode;
 import com.example.EPPOI.model.RequestPoiNode;
@@ -9,6 +10,7 @@ import com.example.EPPOI.repository.CityRepository;
 import com.example.EPPOI.repository.UserNodeRepository;
 import com.example.EPPOI.service.*;
 import com.example.EPPOI.utility.PoiParamsProvider;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +41,15 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<UserNode>> getAllUsers(){
         return ResponseEntity.ok(this.userNodeRepository.findAll());
     }
 
+    @GetMapping("/pois")
+    public ResponseEntity<List<PoiNode>> getPois(){
+        return ResponseEntity.ok(this.poiService.getAllPois());
+    }
     //FIXME: rivedere metodo
     @PostMapping("/poi_request")
     public ResponseEntity<RequestPoiNode> createRequestPoi(@RequestParam String username,

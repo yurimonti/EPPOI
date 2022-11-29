@@ -13,6 +13,7 @@ com/example/EPPOI/EppoiApplication.class
 com/example/EPPOI/repository/ContactRepository.class
 com/example/EPPOI/model/TagNode.class
 com/example/EPPOI/model/user/EnteNode.class
+com/example/EPPOI/controller/EnteController.class
 com/example/EPPOI/security/CustomFilter.class
 com/example/EPPOI/service/AppUserService.class
 com/example/EPPOI/model/TimeSlotNode.class
@@ -54,6 +55,7 @@ com/example/EPPOI/repository/UserRoleRepository.class
 com/example/EPPOI/security/TokenManager.class
 com/example/EPPOI/security/CustomAuthenticationFilter.class
 com/example/EPPOI/service/GeneralUserService.class
+com/example/EPPOI/utility/PoiForm.class
 com/example/EPPOI/model/AddressNode.class
 com/example/EPPOI/repository/TagRepository.class
 com/example/EPPOI/model/ItineraryNode.class

@@ -35,10 +35,11 @@ public class PoiNode {
     }
 
     //TODO: eliminate this constructor
-    public PoiNode(String name, String description, Double timeToVisit) {
+    public PoiNode(String name, String description,CoordsNode coordinate, Double timeToVisit) {
         this();
         this.name = name;
         this.description = description;
+        this.coordinate = coordinate;
         this.timeToVisit = timeToVisit;
     }
 }
