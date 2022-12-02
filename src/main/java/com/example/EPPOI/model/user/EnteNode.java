@@ -15,9 +15,9 @@ import java.util.List;
 
 @Node
 @Data
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+//@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@AllArgsConstructor
 public class EnteNode extends UserNode{
     @Relationship(type = "ENTE_MANAGES_CITY",direction = Relationship.Direction.OUTGOING)
     private CityNode city;

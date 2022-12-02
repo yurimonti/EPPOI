@@ -1,5 +1,6 @@
 package com.example.EPPOI.model.user;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Node
 @Data
+@AllArgsConstructor
 public abstract class UserNode {
     @Id
     @GeneratedValue(generatorClass = UUIDStringGenerator.class)

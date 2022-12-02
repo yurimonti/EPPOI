@@ -15,6 +15,7 @@ import java.util.List;
 @Node
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ThirdPartyRegistrationRequest {
     @Id
     @GeneratedValue
