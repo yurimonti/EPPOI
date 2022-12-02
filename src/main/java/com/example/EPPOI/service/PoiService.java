@@ -1,7 +1,7 @@
 package com.example.EPPOI.service;
 
 import com.example.EPPOI.model.CityNode;
-import com.example.EPPOI.model.PoiNode;
+import com.example.EPPOI.model.poi.PoiNode;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

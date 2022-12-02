@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public abstract class UserNode {
     private String email;
     private String password;
     private String username;
+    @Relationship( value = "USER_HAS_ROLE",direction = Relationship.Direction.OUTGOING)
     private List<UserRoleNode> roles;
 
     public UserNode() {

@@ -1,6 +1,7 @@
 package com.example.EPPOI.service;
 
 import com.example.EPPOI.model.*;
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.model.user.UserRoleNode;
@@ -35,7 +36,6 @@ public class TouristServiceImpl implements TouristService {
         tourist.getItineraries().add(toAdd);
         this.touristRepository.save(tourist);
     }
-
 
     @Override
     public TouristNode getUserByUsername(String username) throws NullPointerException {

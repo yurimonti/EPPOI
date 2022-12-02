@@ -1,6 +1,7 @@
 package com.example.EPPOI;
 
 import com.example.EPPOI.model.*;
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.model.user.UserNode;
@@ -22,7 +23,8 @@ public class EppoiApplication {
 	CommandLineRunner initDatabase(TagRepository tagRepository, CityRepository cityRepository,
 								   PoiRepository poiRepository, CoordsRepository coordsRepository,
 								   ItineraryRepository itineraryRepository,UserRoleRepository userRoleRepository,
-								   UserNodeRepository userNodeRepository,RequestPoiRepository requestPoiRepository){
+								   UserNodeRepository userNodeRepository,RequestPoiRepository requestPoiRepository,
+								   ThirdRequestRegistrationRepository thirdRequestRegistrationRepository){
 		return args -> {
 			requestPoiRepository.deleteAll();
 			userNodeRepository.deleteAll();
@@ -32,6 +34,7 @@ public class EppoiApplication {
 			cityRepository.deleteAll();
             poiRepository.deleteAll();
 			coordsRepository.deleteAll();
+			thirdRequestRegistrationRepository.deleteAll();
 			CoordsNode camerinoCoords = new CoordsNode(20.2333,25.26666);
 			coordsRepository.save(camerinoCoords);
 			CoordsNode p1c = new CoordsNode(20.2433,25.26666);
@@ -84,15 +87,17 @@ public class EppoiApplication {
 			UserRoleNode enteRole = new UserRoleNode("ENTE");
 			UserRoleNode touristRole = new UserRoleNode("TOURIST");
 			UserRoleNode adminRole = new UserRoleNode("ADMIN");
+			UserRoleNode thirdRole = new UserRoleNode("THIRD_PARTY");
 			userRoleRepository.save(enteRole);
 			userRoleRepository.save(touristRole);
 			userRoleRepository.save(adminRole);
-			UserNode enteCamerino = new EnteNode("enteCamerino","ente_camerino",
-					"ente.camerino@gmail.com","password","ente_camerino",camerino,enteRole);
-			UserNode tourist = new TouristNode("name","surname",
-					"name.surname@gmail.com","password","an_user",touristRole);
-			userNodeRepository.save(enteCamerino);
-			userNodeRepository.save(tourist);
+			userRoleRepository.save(thirdRole);
+			/*UserNode enteCamerino = new EnteNode("enteCamerino","ente_camerino",
+					"ente.camerino@gmail.com","password","ente_camerino",camerino,enteRole);*/
+			/*UserNode tourist = new TouristNode("name","surname",
+					"name.surname@gmail.com","password","an_user",touristRole);*/
+			//userNodeRepository.save(enteCamerino);
+			//userNodeRepository.save(tourist);
 			ItineraryNode it1 = new ItineraryNode("i1","desc1");
 			ItineraryRelPoi rel1 = new ItineraryRelPoi(p1,1);
 			ItineraryRelPoi rel2 = new ItineraryRelPoi(p2,2);

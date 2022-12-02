@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TouristRepository extends Neo4jRepository<TouristNode,String> {
+    TouristNode findByUsername(String username);
 }

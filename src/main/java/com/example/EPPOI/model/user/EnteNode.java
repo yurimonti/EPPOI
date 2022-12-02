@@ -1,8 +1,6 @@
 package com.example.EPPOI.model.user;
 
-import com.example.EPPOI.model.CityNode;
-import com.example.EPPOI.model.ItineraryNode;
-import com.example.EPPOI.model.RequestPoiNode;
+import com.example.EPPOI.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,13 +25,18 @@ public class EnteNode extends UserNode{
     @Relationship(type = "ENTE_MANAGES_POI_REQUEST",direction = Relationship.Direction.OUTGOING)
     private List<RequestPoiNode> poiRequests;
 
+    @Relationship(type = "ENTE_MANAGES_REGISTRATION",direction = Relationship.Direction.OUTGOING)
+    private List<ThirdPartyRegistrationRel> registrationRequests;
+
     public EnteNode(){
         super();
         this.poiRequests = new ArrayList<>();
+        this.registrationRequests = new ArrayList<>();
     }
     public EnteNode(String name, String surname, String email, String password, String username, UserRoleNode... roles) {
         super(name, surname, email, password, username, roles);
         this.poiRequests = new ArrayList<>();
+        this.registrationRequests = new ArrayList<>();
     }
 
     public EnteNode(String name, String surname, String email, String password, String username, CityNode city,

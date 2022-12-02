@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CityRepository extends Neo4jRepository<CityNode,Long> {
+    CityNode findCityNodeByName(String name);
 }

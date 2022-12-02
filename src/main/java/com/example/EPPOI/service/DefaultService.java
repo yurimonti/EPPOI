@@ -1,19 +1,14 @@
 package com.example.EPPOI.service;
 
 import com.example.EPPOI.model.CityNode;
-import com.example.EPPOI.model.ItineraryNode;
-import com.example.EPPOI.model.ItineraryRelPoi;
-import com.example.EPPOI.model.PoiNode;
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.repository.CityRepository;
 import com.example.EPPOI.repository.ItineraryRepository;
 import com.example.EPPOI.repository.PoiRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service

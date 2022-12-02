@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EnteRepository extends Neo4jRepository<EnteNode,String> {
+    //EnteNode findByCityName(String cityName);
 }

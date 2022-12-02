@@ -1,7 +1,7 @@
 package com.example.EPPOI.service;
 
 import com.example.EPPOI.model.CityNode;
-import com.example.EPPOI.model.PoiNode;
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.repository.CityRepository;
 import com.example.EPPOI.repository.PoiRepository;
 import lombok.RequiredArgsConstructor;

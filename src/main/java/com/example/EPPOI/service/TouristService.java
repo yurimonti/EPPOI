@@ -2,7 +2,7 @@ package com.example.EPPOI.service;
 
 import com.example.EPPOI.model.CityNode;
 import com.example.EPPOI.model.ItineraryNode;
-import com.example.EPPOI.model.PoiNode;
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.RequestPoiNode;
 import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.repository.TouristRepository;

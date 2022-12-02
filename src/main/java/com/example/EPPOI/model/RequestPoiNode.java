@@ -1,5 +1,6 @@
 package com.example.EPPOI.model;
 
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.UserNode;
 import com.example.EPPOI.utility.PoiParamsProvider;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 @Node
 @Data
 @NoArgsConstructor
+//FIXME: reconsidering class parameters or using a relationship instead
 public class RequestPoiNode {
     @Id @GeneratedValue
     private Long id;

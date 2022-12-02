@@ -1,8 +1,7 @@
 package com.example.EPPOI.controller;
 
-import com.example.EPPOI.dto.CoordsDTO;
 import com.example.EPPOI.model.ItineraryNode;
-import com.example.EPPOI.model.PoiNode;
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.RequestPoiNode;
 import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.model.user.UserNode;
@@ -10,7 +9,6 @@ import com.example.EPPOI.repository.CityRepository;
 import com.example.EPPOI.repository.UserNodeRepository;
 import com.example.EPPOI.service.*;
 import com.example.EPPOI.utility.PoiParamsProvider;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {
-    private final TouristService userService;
+    private final TouristService touristService;
     private final PoiService poiService;
 
     private final CityRepository cityRepository;
@@ -56,12 +54,12 @@ public class UserController {
                                                            @RequestBody Map<String, Object> body){
         TouristNode tourist;
         try{
-            tourist =  this.userService.getUserByUsername(username);
+            tourist =  this.touristService.getUserByUsername(username);
         }catch(Exception e){
             return ResponseEntity.badRequest().build();
         }
         log.info("tourist {}",tourist);
-        RequestPoiNode result = this.userService.createRequestPoi(tourist,PoiParamsProvider.getFromBody(body),
+        RequestPoiNode result = this.touristService.createRequestPoi(tourist,PoiParamsProvider.getFromBody(body),
                 this.cityRepository.findById(Long.parseLong((String) body.get("city"))).get());
         return ResponseEntity.ok(result);
     }
@@ -70,7 +68,7 @@ public class UserController {
     public ResponseEntity<String> createItinerary(@RequestParam String username ,@RequestBody Map<String,Object> body) {
         TouristNode tourist;
         try{
-            tourist =  this.userService.getUserByUsername(username);
+            tourist =  this.touristService.getUserByUsername(username);
         }catch(Exception e){
             return ResponseEntity.ok(e.getMessage());
         }
@@ -80,7 +78,7 @@ public class UserController {
         List<Long> ids = new ArrayList<>();
         List<String> s = (List<String>) body.get("ids");
         s.forEach(i -> ids.add(Long.parseLong(i)));
-        ItineraryNode result = this.userService.createItinerary(tourist,name, description, this.idsToPois(ids));
+        ItineraryNode result = this.touristService.createItinerary(tourist,name, description, this.idsToPois(ids));
         return ResponseEntity.ok(result.toString());
     }
 }

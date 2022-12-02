@@ -1,5 +1,6 @@
 package com.example.EPPOI.model;
 
+import com.example.EPPOI.model.poi.PoiNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.RelationshipId;

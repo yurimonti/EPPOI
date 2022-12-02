@@ -4,16 +4,19 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.example.EPPOI.model.CityNode;
-import com.example.EPPOI.model.user.EnteNode;
-import com.example.EPPOI.model.user.TouristNode;
-import com.example.EPPOI.model.user.UserNode;
-import com.example.EPPOI.model.user.UserRoleNode;
-import com.example.EPPOI.repository.CityRepository;
-import com.example.EPPOI.repository.UserRoleRepository;
+import com.example.EPPOI.model.ItineraryNode;
+import com.example.EPPOI.model.ThirdPartyRegistrationRel;
+import com.example.EPPOI.model.ThirdPartyRegistrationRequest;
+import com.example.EPPOI.model.poi.PoiNode;
+import com.example.EPPOI.model.user.*;
+import com.example.EPPOI.repository.*;
 import com.example.EPPOI.security.CustomAuthenticationFilter;
 import com.example.EPPOI.security.JwtTokenProvider;
 import com.example.EPPOI.security.TokenManager;
+import com.example.EPPOI.service.EnteService;
 import com.example.EPPOI.service.GeneralUserService;
+import com.example.EPPOI.service.PoiService;
+import com.example.EPPOI.service.TouristService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,10 +30,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,14 +49,65 @@ public class AuthController {
     private final UserRoleRepository userRoleRepository;
 
     private final CityRepository cityRepository;
+
+    //TODO: verificare
+    private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
+
+    private final EnteRepository enteRepository;
+
+    private final TouristService touristService;
+
+    private final UserNodeRepository userNodeRepository;
+
+    private final PoiService poiService;
     @Data
     private static class UserBody{
         private String username;
         private String password;
     }
+
+
+    //TODO: delete this method
+    private List<PoiNode> idsToPois(List<Long> ids){
+        List<PoiNode> result = new ArrayList<>();
+        for(Long id : ids){
+            result.add(this.poiService.findPoiById(id));
+        }
+        return result;
+    }
+    //TODO: delete this method
+    @GetMapping("/prova2")
+    public ResponseEntity<?> getUserInfo(@RequestParam String username){
+        return ResponseEntity.ok(this.userNodeRepository.findByUsername(username));
+    }
+    //TODO: delete this method
+    @PostMapping("/itinerary")
+    public ResponseEntity<?> prova(@RequestBody Map<String,?> body){
+        String username = (String)body.get("username");
+        TouristNode tourist;
+        try{
+            tourist =  this.touristService.getUserByUsername(username);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        String name = (String)body.get("name");
+        String description = (String)body.get("description");
+        List<Long> ids = new ArrayList<>();
+        List<String> s = (List<String>) body.get("ids");
+        s.forEach(i -> ids.add(Long.parseLong(i)));
+        ItineraryNode result = this.touristService.createItinerary(tourist,name, description, this.idsToPois(ids));
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserBody body) {
-        Map<String,String> tokens = this.customAuthenticationFilter.authenticate(body.getUsername(), body.getPassword(),"http://localhost:8080/api/v1/auth/login");
+        log.info("Body {}",body);
+        Map<String,String> tokens;
+        try {
+            tokens = this.customAuthenticationFilter.authenticate(body.getUsername(), body.getPassword(), "http://localhost:8080/api/v1/auth/login");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getStackTrace());
+        }
         return ResponseEntity.ok(tokens);
     }
 
@@ -70,6 +121,7 @@ public class AuthController {
         UserRoleNode role = this.userRoleRepository.findByName("TOURIST");
         UserNode user = new TouristNode(name, surname, email, password, username,role);
         this.userService.saveUser(user);
+        log.info("user registered {}",user);
         return ResponseEntity.ok().build();
     }
 
@@ -87,6 +139,30 @@ public class AuthController {
         UserNode user = new EnteNode(name, surname, email, password, username,cityNode,role);
         this.userService.saveUser(user);
         return ResponseEntity.ok().build();
+    }
+
+    //TODO: there is a problem that not allows to an ente to login
+    @PostMapping("/registration-third")
+    public ResponseEntity<?> signupThird(@RequestBody Map<String,Object> body) {
+        String username = (String)body.get("username");
+        String password = (String)body.get("password");
+        String email = (String)body.get("email");
+        String name = (String)body.get("name");
+        String surname = (String)body.get("surname");
+        List<String> cityNames = (List<String>) body.get("cityNames");
+        List<EnteNode> entes = new ArrayList<>();
+        cityNames.forEach(cityName -> entes.addAll(this.enteRepository.findAll().stream().filter(e ->
+                e.getCity().getName().equals(cityName)).toList()));
+        ThirdPartyRegistrationRequest result =
+                new ThirdPartyRegistrationRequest(name, surname, email, password, username,entes.size());
+        this.thirdRequestRegistrationRepository.save(result);
+        entes.forEach(enteNode -> {
+            enteNode.getRegistrationRequests().add(new ThirdPartyRegistrationRel(result, false));
+            this.enteRepository.save(enteNode);
+        });
+        /*UserNode user = new ThirdUserNode(name, surname, email, password, username, role);
+        this.userService.saveUser(user);*/
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/refresh")

@@ -1,5 +1,6 @@
 package com.example.EPPOI.model;
 
+import com.example.EPPOI.model.poi.PoiNode;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
