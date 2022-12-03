@@ -1,5 +1,6 @@
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\GeneralUserService.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ItineraryNode.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\ItineraryService.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\controller\EnteController.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\CustomFilter.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\UserNodeRepository.java
@@ -22,6 +23,7 @@ C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\cont
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\EnteRepository.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\TimeSlotNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\PoiTypeRepository.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\ItineraryServiceImpl.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\TokenManager.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\EnteServiceImpl.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\TagDTO.java
@@ -30,10 +32,12 @@ C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\mode
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\EnteService.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\poi\ThirdPoiNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\EppoiApplication.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ItineraryRequestNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\CustomAuthenticationFilter.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\RequestPoiNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\UserRoleNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\RequestPoiRepository.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\ItineraryForm.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\SerializerObject.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\DefaultService.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\UserNode.java
@@ -67,6 +71,7 @@ C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\util
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\TouristService.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\PoiTypeNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\TagNode.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\PoiDTO.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\UserRoleRepository.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\ContactDTO.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\TouristNode.java

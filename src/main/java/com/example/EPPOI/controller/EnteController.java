@@ -1,10 +1,13 @@
 package com.example.EPPOI.controller;
 
+import com.example.EPPOI.dto.PoiDTO;
+import com.example.EPPOI.model.ItineraryRequestNode;
 import com.example.EPPOI.model.ThirdPartyRegistrationRequest;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.repository.ThirdRequestRegistrationRepository;
 import com.example.EPPOI.service.EnteService;
+import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.MiddlewareToken;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.Map;
 
 @Controller
@@ -38,13 +42,21 @@ public class EnteController {
         return ResponseEntity.ok(ente);
     }
 
+    @PostMapping("/itinerary")
+    public ResponseEntity<?> createItinerary(@RequestBody ItineraryForm itineraryForm, HttpServletRequest request){
+        EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        if(new HashSet<>(ente.getCity().getPOIs().stream().map(PoiNode::getId).toList())
+                .containsAll(itineraryForm.getPOIsId())){
+            return ResponseEntity.ok(this.enteService.createItinerary(ente,itineraryForm));
+        } else return ResponseEntity.ok(this.enteService.createItineraryRequest(ente,itineraryForm));
+    }
+
     @PostMapping("/pois")
     public ResponseEntity<PoiNode> createPoi(@RequestBody PoiForm form,HttpServletRequest request){
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         PoiNode poi = this.enteService.createPoi(ente,form);
         return ResponseEntity.ok(poi);
     }
-
     @PostMapping("/third-registration")
     public ResponseEntity<?> singUpThird(@RequestParam Boolean consensus,@RequestBody Map<String,Object> body,
                                          HttpServletRequest request){

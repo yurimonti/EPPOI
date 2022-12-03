@@ -48,18 +48,6 @@ public class TouristServiceImpl implements TouristService {
         if(user.getRoles().contains(touristRole)) return user;
         else throw new NullPointerException("User " + username + "has not role " + touristRole);
     }
-
-    //TODO: to modify
-    @Override
-    public void login(String username, String password) {
-
-    }
-    //TODO: to modify
-    @Override
-    public void logout(UUID uuid) {
-
-    }
-
     @Override
     public ItineraryNode createItinerary(TouristNode creator,String name, String description, List<PoiNode> POIs) {
         ItineraryNode result = new ItineraryNode(name, description);

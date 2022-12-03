@@ -16,7 +16,7 @@ import java.util.List;
 
 @Node
 @Data
-//@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AllArgsConstructor
 public class TouristNode extends UserNode{

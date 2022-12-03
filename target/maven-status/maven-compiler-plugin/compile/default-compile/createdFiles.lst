@@ -5,11 +5,13 @@ com\example\EPPOI\controller\TouristController.class
 com\example\EPPOI\repository\ItineraryRepository.class
 com\example\EPPOI\dto\ContactDTO.class
 com\example\EPPOI\model\poi\ThirdPoiNode.class
+com\example\EPPOI\service\CityServiceImpl.class
 com\example\EPPOI\controller\AuthController$UserBody.class
 com\example\EPPOI\dto\PoiTagRelDTO.class
 com\example\EPPOI\model\ItineraryRelPoi.class
 com\example\EPPOI\repository\CoordsRepository.class
 com\example\EPPOI\security\JwtTokenProvider.class
+com\example\EPPOI\dto\PoiDTO.class
 com\example\EPPOI\security\SecurityConfig.class
 com\example\EPPOI\dto\AddressDTO.class
 com\example\EPPOI\model\RequestPoiNode.class
@@ -24,6 +26,8 @@ com\example\EPPOI\repository\CityRepository.class
 com\example\EPPOI\repository\TouristRepository.class
 com\example\EPPOI\utility\PoiParamsProvider.class
 com\example\EPPOI\controller\DefaultController.class
+com\example\EPPOI\service\ItineraryService.class
+com\example\EPPOI\service\ItineraryServiceImpl.class
 com\example\EPPOI\model\ThirdPartyRegistrationRequest.class
 com\example\EPPOI\repository\AddressRepository.class
 com\example\EPPOI\model\user\EnteNode.class
@@ -34,6 +38,7 @@ com\example\EPPOI\dto\TimeSlotDTO.class
 com\example\EPPOI\service\GeneralUserService.class
 com\example\EPPOI\service\TouristServiceImpl.class
 com\example\EPPOI\security\CustomAuthorizationFilter.class
+com\example\EPPOI\service\CityService.class
 com\example\EPPOI\model\poi\EVType.class
 com\example\EPPOI\model\poi\PoiNode.class
 com\example\EPPOI\model\ItineraryNode.class
@@ -49,6 +54,7 @@ com\example\EPPOI\repository\ThirdRequestRegistrationRepository.class
 com\example\EPPOI\model\AddressNode.class
 com\example\EPPOI\repository\TagRepository.class
 com\example\EPPOI\utility\MiddlewareToken.class
+com\example\EPPOI\model\ItineraryRequestNode.class
 com\example\EPPOI\utility\TimeSlotSerializer.class
 com\example\EPPOI\repository\TimeSlotRepository.class
 com\example\EPPOI\dto\CoordsDTO.class
@@ -59,6 +65,8 @@ com\example\EPPOI\repository\ContactRepository.class
 com\example\EPPOI\service\PoiServiceImpl.class
 com\example\EPPOI\model\PoiTagRel.class
 com\example\EPPOI\model\ContactNode.class
+com\example\EPPOI\repository\ItineraryRequestRepository.class
+com\example\EPPOI\model\ItineraryRequestRel.class
 com\example\EPPOI\security\TokenManager.class
 com\example\EPPOI\service\DefaultService.class
 com\example\EPPOI\controller\UserController.class
@@ -73,6 +81,7 @@ com\example\EPPOI\utility\AddressSerializer.class
 com\example\EPPOI\EppoiApplication.class
 com\example\EPPOI\repository\UserNodeRepository.class
 com\example\EPPOI\dto\TagDTO.class
+com\example\EPPOI\utility\ItineraryForm.class
 com\example\EPPOI\service\EnteServiceImpl.class
 com\example\EPPOI\model\poi\EVTypeRel.class
 com\example\EPPOI\model\user\UserRoleNode.class

@@ -37,6 +37,10 @@ public class EppoiApplication {
 			thirdRequestRegistrationRepository.deleteAll();
 			CoordsNode camerinoCoords = new CoordsNode(20.2333,25.26666);
 			coordsRepository.save(camerinoCoords);
+			CoordsNode castelCoords = new CoordsNode(21.2333,24.26666);
+			coordsRepository.save(castelCoords);
+			CoordsNode c1c = new CoordsNode(20.2433,25.26666);
+			coordsRepository.save(c1c);
 			CoordsNode p1c = new CoordsNode(20.2433,25.26666);
 			coordsRepository.save(p1c);
 			CoordsNode p2c = new CoordsNode(20.2533,25.26666);
@@ -56,6 +60,7 @@ public class EppoiApplication {
 			CoordsNode p9c = new CoordsNode(20.2033,25.20666);
 			coordsRepository.save(p9c);
 			PoiNode p1 = new PoiNode("p1","desc1",p1c,20.00);
+			PoiNode c1 = new PoiNode("c1","desc1",c1c,20.00);
 			PoiNode p2 = new PoiNode("p2","desc2",p2c,20.00);
 			PoiNode p3 = new PoiNode("p3","desc3",p3c,20.00);
 			PoiNode p4 = new PoiNode("p4","desc4",p4c,20.00);
@@ -73,6 +78,7 @@ public class EppoiApplication {
 			poiRepository.save(p7);
 			poiRepository.save(p8);
 			poiRepository.save(p9);
+			poiRepository.save(c1);
 			CityNode camerino = new CityNode("Camerino",camerinoCoords);
 			camerino.getPOIs().add(p1);
 			camerino.getPOIs().add(p2);
@@ -84,6 +90,9 @@ public class EppoiApplication {
 			camerino.getPOIs().add(p8);
 			camerino.getPOIs().add(p9);
 			cityRepository.save(camerino);
+			CityNode castel = new CityNode("Castel Raimondo",castelCoords);
+			castel.getPOIs().add(c1);
+			cityRepository.save(castel);
 			UserRoleNode enteRole = new UserRoleNode("ENTE");
 			UserRoleNode touristRole = new UserRoleNode("TOURIST");
 			UserRoleNode adminRole = new UserRoleNode("ADMIN");
