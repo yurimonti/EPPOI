@@ -24,4 +24,9 @@ public class CityServiceImpl implements CityService {
         }
         return cities.stream().distinct().toList();
     }
+
+    @Override
+    public List<CityNode> getAllCities() {
+        return this.cityRepository.findAll();
+    }
 }

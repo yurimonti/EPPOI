@@ -1,84 +1,88 @@
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\GeneralUserService.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ItineraryNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\ItineraryService.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\controller\EnteController.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\CustomFilter.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\UserNodeRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\controller\UserController.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ContactNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\CoordsDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\GeneralUserServiceImpl.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\poi\EVTypeRel.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\PoiTagRelDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\ThirdRequestRegistrationRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\PoiRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\poi\EVType.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\PoiTypeDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\poi\EVSharingNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\MiddlewareToken.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\TagRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ThirdPartyRegistrationRel.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\controller\AuthController.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\controller\DefaultController.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\EnteRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\TimeSlotNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\PoiTypeRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\ItineraryServiceImpl.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\TokenManager.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\EnteServiceImpl.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\TagDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\ContactRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\CategoryNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\EnteService.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\poi\ThirdPoiNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\EppoiApplication.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ItineraryRequestNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\CustomAuthenticationFilter.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\RequestPoiNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\UserRoleNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\RequestPoiRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\ItineraryForm.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\SerializerObject.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\DefaultService.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\UserNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ItineraryRelPoi.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\ThirdUserNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\TimeSlotDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\PoiTagRel.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\CoordsRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\CustomAuthorizationFilter.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\TouristServiceImpl.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\Costants.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\CoordinateSerializer.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\PoiServiceImpl.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\AddressRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\PoiParamsProvider.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\CoordsNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\TouristRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\poi\PoiNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\CategoryRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\PoiService.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\EnteNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\AddressNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\ItineraryRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\PoiForm.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\CityRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\JwtTokenProvider.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\CategoryDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\TimeSlotRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\AppUserService.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\AddressSerializer.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\TouristService.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\PoiTypeNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\TagNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\PoiDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\UserRoleRepository.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\ContactDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\TouristNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ThirdPartyRegistrationRequest.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\TimeSlotSerializer.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\AddressDTO.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\CityNode.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\controller\TouristController.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\PaymentMethod.java
-C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\SecurityConfig.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/TimeSlotDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/controller/EnteController.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/TouristService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/CategoryNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/TagDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/controller/UserController.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/ItineraryForm.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/PoiServiceImpl.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/TimeSlotSerializer.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/PoiForm.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/AddressNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/PoiParamsProvider.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/CoordsNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/controller/AuthController.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/AddressSerializer.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/CoordsDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/EnteRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/RequestPoiRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/CityNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/EppoiApplication.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/user/UserNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/ItineraryRelPoi.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/AppUserService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/AddressRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/ItineraryRequestRel.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/controller/TouristController.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/user/UserRoleNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/controller/DefaultController.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/AddressDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/user/TouristNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/ItineraryRequestNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/PoiTypeDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/PaymentMethod.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/TimeSlotRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/PoiTagRel.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/TagNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/PoiRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/ContactDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/ItineraryNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/poi/EVType.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/poi/EVTypeRel.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/TagRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/ThirdPartyRegistrationRequest.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/GeneralUserService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/UserRoleRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/CoordsRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/PoiDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/MiddlewareToken.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/ItineraryRequestRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/Costants.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/TouristRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/poi/PoiNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/CategoryDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/CategoryRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/ItineraryService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/security/TokenManager.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/user/EnteNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/TimeSlotNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/DefaultService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/security/CustomAuthorizationFilter.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/UserNodeRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/TouristServiceImpl.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/GeneralUserServiceImpl.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/EnteServiceImpl.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/CityServiceImpl.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/poi/EVSharingNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/CityRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/CoordinateSerializer.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/ItineraryRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/PoiTypeNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/ThirdRequestRegistrationRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/EnteService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/CityService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/ThirdPartyRegistrationRel.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/PoiTypeRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/security/CustomAuthenticationFilter.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/security/JwtTokenProvider.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/ContactNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/security/CustomFilter.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/dto/PoiTagRelDTO.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/user/ThirdUserNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/security/SecurityConfig.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/PoiService.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/RequestPoiNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/utility/SerializerObject.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/repository/ContactRepository.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/model/poi/ThirdPoiNode.java
+/home/yuri/GitHub-repositories/EPPOI/src/main/java/com/example/EPPOI/service/ItineraryServiceImpl.java

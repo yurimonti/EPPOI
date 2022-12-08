@@ -1,11 +1,16 @@
 package com.example.EPPOI.dto;
 
 import com.example.EPPOI.model.TimeSlotNode;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@AllArgsConstructor
 public class TimeSlotDTO {
+    private Long id;
     private List<String> monday;
     private List<String> tuesday;
     private List<String> wednesday;
@@ -28,6 +33,7 @@ public class TimeSlotDTO {
 
     public TimeSlotDTO(List<String> monday, List<String> tuesday, List<String> wednesday, List<String> thursday,
                        List<String> friday, List<String> saturday, List<String> sunday, boolean isOpen) {
+        this();
         this.monday = monday;
         this.tuesday = tuesday;
         this.wednesday = wednesday;
@@ -40,6 +46,7 @@ public class TimeSlotDTO {
 
     public TimeSlotDTO(TimeSlotNode timeSlot){
         this();
+        this.id = timeSlot.getId();
         timeSlot.getMonday().forEach(localTime -> this.monday.add(localTime.toString()));
         timeSlot.getTuesday().forEach(localTime -> this.tuesday.add(localTime.toString()));
         timeSlot.getWednesday().forEach(localTime -> this.wednesday.add(localTime.toString()));

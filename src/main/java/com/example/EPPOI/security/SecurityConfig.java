@@ -31,6 +31,7 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.authorizeHttpRequests().antMatchers("/pois").permitAll();
         http.authorizeHttpRequests().antMatchers("/auth/**").permitAll();
         http.authorizeHttpRequests().antMatchers("/user/**").authenticated();
         http.authorizeHttpRequests().antMatchers("/tourist/**").hasAnyAuthority("TOURIST");

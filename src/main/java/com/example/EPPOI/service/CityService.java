@@ -9,4 +9,5 @@ import java.util.List;
 @Service
 public interface CityService {
     List<CityNode> getCitiesByPoi(PoiNode ...pois);
+    List<CityNode> getAllCities();
 }
