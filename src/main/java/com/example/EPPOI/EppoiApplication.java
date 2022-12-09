@@ -11,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.LocalTime;
@@ -18,6 +19,7 @@ import java.util.*;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableAsync
 public class EppoiApplication {
 
 	public static void main(String[] args) {
@@ -364,12 +366,12 @@ public class EppoiApplication {
 			userRoleRepository.save(adminRole);
 			userRoleRepository.save(thirdRole);
 			*//*UserNode enteCamerino = new EnteNode("enteCamerino","ente_camerino",
-					"ente.camerino@gmail.com","password","ente_camerino",camerino,enteRole);*//*
-			*//*UserNode tourist = new TouristNode("name","surname",
-					"name.surname@gmail.com","password","an_user",touristRole);*//*
+					"ente.camerino@gmail.com","password","ente_camerino",camerino,enteRole);
+			UserNode tourist = new TouristNode("name","surname",
+					"name.surname@gmail.com","password","an_user",touristRole);
 			//userNodeRepository.save(enteCamerino);
 			//userNodeRepository.save(tourist);
-			*//*ItineraryNode it1 = new ItineraryNode("i1","desc1");
+			ItineraryNode it1 = new ItineraryNode("i1","desc1");
 			ItineraryRelPoi rel1 = new ItineraryRelPoi(p1,1);
 			ItineraryRelPoi rel2 = new ItineraryRelPoi(p2,2);
 			ItineraryRelPoi rel3 = new ItineraryRelPoi(p3,3);

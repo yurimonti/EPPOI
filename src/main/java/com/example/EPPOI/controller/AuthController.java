@@ -50,53 +50,14 @@ public class AuthController {
 
     private final CityRepository cityRepository;
 
-    //TODO: verificare
     private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
 
     private final EnteRepository enteRepository;
 
-    private final TouristService touristService;
-
-    private final UserNodeRepository userNodeRepository;
-
-    private final PoiService poiService;
     @Data
     private static class UserBody{
         private String username;
         private String password;
-    }
-
-
-    //TODO: delete this method
-    private List<PoiNode> idsToPois(List<Long> ids){
-        List<PoiNode> result = new ArrayList<>();
-        for(Long id : ids){
-            result.add(this.poiService.findPoiById(id));
-        }
-        return result;
-    }
-    //TODO: delete this method
-    @GetMapping("/prova2")
-    public ResponseEntity<?> getUserInfo(@RequestParam String username){
-        return ResponseEntity.ok(this.userNodeRepository.findByUsername(username));
-    }
-    //TODO: delete this method
-    @PostMapping("/itinerary")
-    public ResponseEntity<?> prova(@RequestBody Map<String,?> body){
-        String username = (String)body.get("username");
-        TouristNode tourist;
-        try{
-            tourist =  this.touristService.getUserByUsername(username);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        String name = (String)body.get("name");
-        String description = (String)body.get("description");
-        List<Long> ids = new ArrayList<>();
-        List<String> s = (List<String>) body.get("ids");
-        s.forEach(i -> ids.add(Long.parseLong(i)));
-        ItineraryNode result = this.touristService.createItinerary(tourist,name, description, this.idsToPois(ids));
-        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/login")
@@ -132,16 +93,15 @@ public class AuthController {
         String email = (String)body.get("email");
         String name = (String)body.get("name");
         String surname = (String)body.get("surname");
-        String cityName = (String) body.get("cityName");
+        Long cityId = Long.parseLong((String) body.get("cityId"));
         UserRoleNode role = this.userRoleRepository.findByName("ENTE");
-        CityNode cityNode = this.cityRepository.findAll().stream().filter(c -> c.getName().equals(cityName))
-                .findFirst().orElseThrow(()-> new NullPointerException("No such city"));
+        CityNode cityNode = this.cityRepository.findById(cityId)
+                .orElseThrow(()-> new NullPointerException("No such city"));
         UserNode user = new EnteNode(name, surname, email, password, username,cityNode,role);
         this.userService.saveUser(user);
         return ResponseEntity.ok().build();
     }
 
-    //TODO: there is a problem that not allows to an ente to login
     @PostMapping("/registration-third")
     public ResponseEntity<?> signupThird(@RequestBody Map<String,Object> body) {
         String username = (String)body.get("username");
@@ -149,10 +109,10 @@ public class AuthController {
         String email = (String)body.get("email");
         String name = (String)body.get("name");
         String surname = (String)body.get("surname");
-        List<String> cityNames = (List<String>) body.get("cityNames");
+        List<Long> cityIds = ((List<String>) body.get("cityNames")).stream().map(Long::parseLong).toList();
         List<EnteNode> entes = new ArrayList<>();
-        cityNames.forEach(cityName -> entes.addAll(this.enteRepository.findAll().stream().filter(e ->
-                e.getCity().getName().equals(cityName)).toList()));
+        cityIds.forEach(cityId -> entes.addAll(this.enteRepository.findAll().stream().filter(e ->
+                e.getCity().getId().equals(cityId)).toList()));
         ThirdPartyRegistrationRequest result =
                 new ThirdPartyRegistrationRequest(name, surname, email, password, username,entes.size());
         this.thirdRequestRegistrationRepository.save(result);

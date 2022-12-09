@@ -1,10 +1,12 @@
 package com.example.EPPOI.dto;
 
 import com.example.EPPOI.model.PoiTagRel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 public class PoiTagRelDTO {
     private Long id;
     private TagDTO tag;

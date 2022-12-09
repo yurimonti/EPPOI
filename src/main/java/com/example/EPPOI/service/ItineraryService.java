@@ -13,4 +13,9 @@ import java.util.List;
 public interface ItineraryService {
     void fillItinerary(ItineraryNode toFill, List<PoiNode> target);
     void fillItinerary(ItineraryRequestNode toFill, List<PoiNode> target);
+
+    void saveItinerary(ItineraryNode toSave);
+    void saveItinerary(ItineraryRequestNode toSave);
+
+    ItineraryNode createItineraryFromRequest(ItineraryRequestNode request);
 }

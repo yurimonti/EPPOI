@@ -21,10 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class EnteServiceImpl implements EnteService {
-    private final ItineraryRepository itineraryRepository;
-    private final PoiRepository poiRepository;
-    //TODO: use city service
-    private final CityRepository cityRepository;
     private final CityService cityService;
     private final EnteRepository enteRepository;
 
@@ -46,39 +42,89 @@ public class EnteServiceImpl implements EnteService {
         return this.poiService.savePoi(result);
     }
 
+
+    @Override
+    public PoiNode modifyPoi(EnteNode ente, PoiForm form,Long poiToModify) {
+        CityNode city = ente.getCity();
+        log.info("city :{}",city.getName());
+        PoiNode toModify = this.poiService.findPoiById(poiToModify);
+        log.info("poi to modify :{}",toModify.getName());
+        if(city.getPOIs().stream().noneMatch(p -> p.getId().equals(poiToModify)))
+            throw new NullPointerException("this Poi: "+toModify.getName()+" is not of this Ente: "+ente.getUsername());
+        return this.poiService.setParamsToPoi(toModify,form);
+    }
+
     //------------------------------------  ITINERARIES ----------------------------------------------------------
     @Override
     public ItineraryNode createItinerary(EnteNode ente, ItineraryForm itineraryForm) {
-        ItineraryNode result = new ItineraryNode(itineraryForm.getName(),itineraryForm.getDescription());
+        ItineraryNode result = new ItineraryNode(itineraryForm.getName(), itineraryForm.getDescription());
         List<PoiNode> POIsToAdd = new ArrayList<>();
         itineraryForm.getPOIsId().forEach(i -> POIsToAdd.add(this.poiService.findPoiById(i)));
-        this.itineraryService.fillItinerary(result,POIsToAdd);
+        this.itineraryService.fillItinerary(result, POIsToAdd);
         CityNode city = ente.getCity();
         city.getItineraries().add(result);
-        this.cityRepository.save(city);
+        this.cityService.saveCity(city);
         return result;
+    }
+
+    private List<EnteNode> getEntesByCity(CityNode city) {
+        return this.enteRepository.findAll().stream().filter(e -> e.getCity().getId().equals(city.getId())).toList();
     }
 
     @Override
     public ItineraryRequestNode createItineraryRequest(EnteNode ente, ItineraryForm itineraryForm) {
-        ItineraryRequestNode result = new ItineraryRequestNode(itineraryForm.getName(),itineraryForm.getDescription());
+        ItineraryRequestNode result = new ItineraryRequestNode(itineraryForm.getName(), itineraryForm.getDescription());
+        log.info("1");
         List<PoiNode> POIsToAdd = new ArrayList<>();
         List<EnteNode> entes = new ArrayList<>();
         itineraryForm.getPOIsId().forEach(i -> {
             PoiNode p = this.poiService.findPoiById(i);
             POIsToAdd.add(p);
         });
-        this.itineraryService.fillItinerary(result,POIsToAdd);
-        this.cityService.getCitiesByPoi(POIsToAdd.toArray(PoiNode[]::new))
-                .forEach(c -> entes.addAll(this.enteRepository.findAllByCity_Name(c.getName())));
-        entes.forEach(e -> e.getItineraryRequests().add(new ItineraryRequestRel(result,false)));
+        log.info("2");
+        List<CityNode> cities = this.cityService.getCitiesByPoi(POIsToAdd);
+        log.info("cities : {}",cities.stream().map(CityNode::getName).toList());
+        cities.forEach(c -> entes.addAll(this.getEntesByCity(c)));
+        log.info("enti coinvolti {}",entes.stream().map(EnteNode::getName).toList());
+        result.setConsensus(entes.size());
+        log.info("entes size {}",entes.size());
+        this.itineraryService.fillItinerary(result, POIsToAdd);
+        entes.forEach(e -> e.getItineraryRequests().add(new ItineraryRequestRel(result, false)));
         this.enteRepository.saveAll(entes);
         return result;
     }
-    //TODO: to implement
-    @Override
-    public void setConsensusToItinerary(ItineraryRequestNode target, boolean consensus) {
 
+    @Override
+    public void setConsensusToItinerary(EnteNode ente, ItineraryRequestNode target, boolean consensus) {
+        ItineraryRequestRel request = ente.getItineraryRequests().stream()
+                .filter(i -> i.getRequest().getId().equals(target.getId()))
+                .findFirst()
+                .orElseThrow(() -> new NullPointerException("target request not found"));
+        if (consensus) {
+            if (!request.getConsensus() && target.getConsensus() > 0) {
+                request.setConsensus(true);
+                target.setConsensus(target.getConsensus() - 1);
+                if (target.getConsensus() == 0) {
+                    target.setAccepted(true);
+                    ItineraryNode it = this.itineraryService.createItineraryFromRequest(target);
+                    this.itineraryService.saveItinerary(it);
+                    this.enteRepository.findAll().stream()
+                            .filter(e -> e.getItineraryRequests().stream()
+                                    .map(ItineraryRequestRel::getRequest)
+                                    .map(ItineraryRequestNode::getId)
+                                    .toList()
+                                    .contains(target.getId()))
+                            .map(EnteNode::getCity)
+                            .forEach(c -> {
+                                this.cityService.addItinerary(c, it);
+                            });
+                }
+            }
+        } else {
+            target.setConsensus(0);
+            target.setAccepted(false);
+        }
+        this.itineraryService.saveItinerary(target);
     }
 
     //------------------------------------  THIRD USER MANAGEMENT ---------------------------------------------
@@ -90,12 +136,12 @@ public class EnteServiceImpl implements EnteService {
         if (consensus) {
             if (!a.getConsensus()) {
                 a.setConsensus(true);
-                target.setConsensus(target.getConsensus()-1);
+                target.setConsensus(target.getConsensus() - 1);
                 this.thirdRequestRegistrationRepository.save(target);
-                if(target.getConsensus() == 0){
+                if (target.getConsensus() == 0) {
                     UserRoleNode role = this.userRoleRepository.findByName("THIRD_PARTY");
-                    this.generalUserService.saveUser(new ThirdUserNode(target.getName(),target.getSurname(),target.getEmail(),
-                            target.getPassword(), target.getUsername(),role));
+                    this.generalUserService.saveUser(new ThirdUserNode(target.getName(), target.getSurname(), target.getEmail(),
+                            target.getPassword(), target.getUsername(), role));
                     List<EnteNode> entes = this.enteRepository.findAll().stream()
                             .filter(e ->
                                     e.getRegistrationRequests().stream()
@@ -103,13 +149,12 @@ public class EnteServiceImpl implements EnteService {
                                             .toList()
                                             .contains(target))
                             .toList();
-                    entes.forEach(e -> this.deleteRegistrationRequest(e,target));
+                    entes.forEach(e -> this.deleteRegistrationRequest(e, target));
                     this.thirdRequestRegistrationRepository.delete(target);
                     //this.enteRepository.saveAll(entes);
-
                 }
             }
-        } else{
+        } else {
             this.thirdRequestRegistrationRepository.delete(target);
         }
     }
@@ -128,7 +173,6 @@ public class EnteServiceImpl implements EnteService {
     public EnteRepository getRepository() {
         return this.enteRepository;
     }
-
 
 
     @Override

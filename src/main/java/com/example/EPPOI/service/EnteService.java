@@ -11,9 +11,9 @@ import com.example.EPPOI.utility.PoiForm;
 
 public interface EnteService extends AppUserService<EnteNode> {
     PoiNode createPoi(EnteNode ente,PoiForm form);
+    PoiNode modifyPoi(EnteNode ente,PoiForm form,Long toModify);
     ItineraryNode createItinerary(EnteNode ente, ItineraryForm itineraryForm);
-    //TODO:set request as target instead of itinerary
-    void setConsensusToItinerary(ItineraryRequestNode target,boolean consensus);
+    void setConsensusToItinerary(EnteNode ente,ItineraryRequestNode target,boolean consensus);
     void setConsensusToRegistration(EnteNode ente,ThirdPartyRegistrationRequest target,boolean consensus);
 
     void deleteRegistrationRequest(EnteNode ente,ThirdPartyRegistrationRequest target);

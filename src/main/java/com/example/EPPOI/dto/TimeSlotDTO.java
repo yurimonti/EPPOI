@@ -18,7 +18,7 @@ public class TimeSlotDTO {
     private List<String> friday;
     private List<String> saturday;
     private List<String> sunday;
-    private boolean isOpen;
+    private Boolean isOpen;
 
     public TimeSlotDTO(){
         this.monday = new ArrayList<>();

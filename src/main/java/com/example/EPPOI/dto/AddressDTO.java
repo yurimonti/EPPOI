@@ -10,9 +10,9 @@ public class AddressDTO {
     private Integer number;
 
     public AddressDTO() {
-        this.id = 0L;
+        this.id = null;
         this.street = "";;
-        this.number = 0;
+        this.number = null;
     }
 
     public AddressDTO(String street, Integer number) {

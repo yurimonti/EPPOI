@@ -12,7 +12,7 @@ public class ContactDTO {
 
 
     public ContactDTO(){
-        this.id = 0L;
+        this.id = null;
         this.cellNumber = "";
         this.email = "";
         this.fax = "";

@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 public class PoiForm{
+    private Long idPoi;
     private String name;
     private String description;
     private CoordsDTO coordinate;
@@ -18,5 +19,5 @@ public class PoiForm{
     private Double ticketPrice;
     private List<PoiTypeDTO> types;
     private ContactDTO contact;
-    private PoiTagRelDTO tagValues;
+    private List<PoiTagRelDTO> tagValues;
 }

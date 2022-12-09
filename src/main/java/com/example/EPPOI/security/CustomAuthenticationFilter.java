@@ -21,14 +21,10 @@ public class CustomAuthenticationFilter {
 
     public Map<String, String> authenticate(String username, String password, String url) throws AuthenticationException {
         UsernamePasswordAuthenticationToken UPtoken = new UsernamePasswordAuthenticationToken(username, password);
-        log.info("Authenticating {}", UPtoken);
         Authentication auth = authenticationManager.authenticate(UPtoken);
         User user = (User)auth.getPrincipal();
-        log.info("user : {}", user);
         String accessToken = jwtTokenProvider.generateJwtAccessToken(user,url);
-        log.info("access : {}", accessToken);
         String refreshToken = jwtTokenProvider.generateJwtRefreshToken(user,url);
-        log.info("refresh : {}", refreshToken);
         Map<String,String> tokens = new HashMap<>();
         tokens.put("access_token",accessToken);
         tokens.put("refresh_token",refreshToken);

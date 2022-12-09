@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class PoiTypeDTO {
+    private Long id;
     private String name;
     private List<CategoryDTO> categories;
     private List<TagDTO> tags;
@@ -23,6 +24,7 @@ public class PoiTypeDTO {
 
     public PoiTypeDTO(PoiTypeNode poiType) {
         this();
+        this.id = poiType.getId();
         this.name = poiType.getName();
         this.categories = new ArrayList<>();
         this.tags = new ArrayList<>();

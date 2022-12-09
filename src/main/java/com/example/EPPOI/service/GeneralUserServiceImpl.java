@@ -75,7 +75,7 @@ public class GeneralUserServiceImpl implements GeneralUserService, UserDetailsSe
             log.error("User " + username + "not found in database");
             throw new UsernameNotFoundException("User " + username + "not found in database");
         } else {
-            log.info("User {} found in database", user);
+            log.info("User {} found in database", username);
             log.info("ROLES {} for {}",user.getRoles(), username);
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

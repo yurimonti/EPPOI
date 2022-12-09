@@ -19,6 +19,7 @@ public class ItineraryRequestNode {
     private Long id;
     private String name;
     private String description;
+    private Boolean isAccepted;
     private List<ItineraryRelPoi> points;
     private Boolean accepted;
     private Integer consensus;
@@ -29,6 +30,7 @@ public class ItineraryRequestNode {
     public ItineraryRequestNode() {
         this.points = new ArrayList<>();
         this.geoJsonList = new ArrayList<>();
+        this.isAccepted = false;
     }
 
     public ItineraryRequestNode(String name, String description) {

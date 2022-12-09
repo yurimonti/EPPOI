@@ -12,6 +12,5 @@ import java.util.List;
 public class ItineraryForm {
     private String name;
     private String description;
-    //TODO: change to DTO
     private List<Long> POIsId;
 }

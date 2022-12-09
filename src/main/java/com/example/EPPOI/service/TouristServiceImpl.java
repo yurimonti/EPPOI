@@ -21,16 +21,11 @@ import java.util.UUID;
 public class TouristServiceImpl implements TouristService {
 
     private final ItineraryRepository itineraryRepository;
-    private final CityRepository cityRepository;
+    private final CityService cityService;
     private final TouristRepository touristRepository;
     private final UserRoleRepository userRoleRepository;
     private final EnteRepository enteRepository;
     private final RequestPoiRepository requestPoiRepository;
-
-    private CityNode getCityFromPoi(PoiNode poi){
-        return this.cityRepository.findAll().stream().filter(c -> c.getPOIs().contains(poi)).findFirst()
-                .orElseThrow(()-> new NullPointerException("No city found for that poi"));
-    }
 
     private void addItineraryToUser(TouristNode tourist, ItineraryNode toAdd){
         tourist.getItineraries().add(toAdd);
@@ -58,13 +53,13 @@ public class TouristServiceImpl implements TouristService {
         this.itineraryRepository.save(result);
         List<CityNode> cities = new ArrayList<>();
         for (PoiNode p : POIs) {
-            cities.add(this.getCityFromPoi(p));
+            cities.add(this.cityService.getCityByPoi(p));
         }
         cities.forEach(cityNode -> {
             cityNode.getItineraries().add(result);
             //this.cityRepository.save(cityNode);
         });
-        this.cityRepository.saveAll(cities);
+        this.cityService.saveCity(cities.toArray(CityNode[]::new));
         this.addItineraryToUser(creator,result);
         return result;
     }
