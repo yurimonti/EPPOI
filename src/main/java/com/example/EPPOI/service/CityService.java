@@ -11,9 +11,11 @@ import java.util.List;
 public interface CityService {
     List<CityNode> getCitiesByPoi(List<PoiNode> pois);
 
+    CityNode getCityById(Long cityId);
+
     List<CityNode> getAllCities();
 
-    CityNode getCityByPoi(PoiNode poi);
+    CityNode getCityByPoi(Long poiId);
     void saveCity(CityNode ...toSave);
 
     void addItinerary(CityNode city,ItineraryNode target);

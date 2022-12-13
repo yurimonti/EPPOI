@@ -49,7 +49,7 @@ public class UserController {
         return ResponseEntity.ok(this.poiService.getAllPois());
     }
     //FIXME: rivedere metodo
-    @PostMapping("/poi_request")
+/*    @PostMapping("/poi_request")
     public ResponseEntity<RequestPoiNode> createRequestPoi(@RequestParam String username,
                                                            @RequestBody Map<String, Object> body){
         TouristNode tourist;
@@ -62,7 +62,7 @@ public class UserController {
         RequestPoiNode result = this.touristService.createRequestPoi(tourist,PoiParamsProvider.getFromBody(body),
                 this.cityRepository.findById(Long.parseLong((String) body.get("city"))).get());
         return ResponseEntity.ok(result);
-    }
+    }*/
 
     @PostMapping("/itinerary")
     public ResponseEntity<String> createItinerary(@RequestParam String username ,@RequestBody Map<String,Object> body) {

@@ -10,6 +10,7 @@ import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.repository.ItineraryRequestRepository;
 import com.example.EPPOI.repository.ThirdRequestRegistrationRepository;
 import com.example.EPPOI.service.EnteService;
+import com.example.EPPOI.service.PoiRequestService;
 import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.MiddlewareToken;
 import com.example.EPPOI.utility.PoiForm;
@@ -33,14 +34,17 @@ public class EnteController {
 
     private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
+
+    private final PoiRequestService poiRequestService;
     private EnteService enteService;
 
     public EnteController(EnteService enteService, ThirdRequestRegistrationRepository thirdRequestRegistrationRepository,
-                          ItineraryRequestRepository itineraryRequestRepository) {
+                          ItineraryRequestRepository itineraryRequestRepository,PoiRequestService poiRequestService) {
         this.enteService = enteService;
         this.thirdRequestRegistrationRepository = thirdRequestRegistrationRepository;
         this.middlewareToken = new MiddlewareToken<>(enteService.getRepository());
         this.itineraryRequestRepository = itineraryRequestRepository;
+        this.poiRequestService = poiRequestService;
     }
 
     @GetMapping
@@ -106,7 +110,13 @@ public class EnteController {
     public ResponseEntity<?> modifyPoi(@RequestBody PoiForm form,HttpServletRequest request){
         log.info("form : {}",form);
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        PoiNode poi = this.enteService.modifyPoi(ente,form,form.getIdPoi());
+        PoiNode poi;
+        try{
+            poi = this.enteService.modifyPoi(ente,form,form.getIdPoi());
+        } catch(Exception e){
+            log.error(e.getClass()+" "+e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(new PoiDTO(poi));
     }
 
@@ -115,6 +125,13 @@ public class EnteController {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         PoiNode poi = this.enteService.createPoi(ente,form);
         return ResponseEntity.ok(new PoiDTO(poi));
+    }
+    //------------------------- POIs REQUESTS ------------------------------------------------
+    //TODO: implement that
+    @GetMapping("/poi-requests")
+    public ResponseEntity<?> getPoiRequests(HttpServletRequest request){
+        EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        return ResponseEntity.ok(ente.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList());
     }
 
     //------------------------- THIRD  ------------------------------------------------

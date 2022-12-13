@@ -1,11 +1,10 @@
 package com.example.EPPOI.service;
 
-import com.example.EPPOI.dto.AddressDTO;
-import com.example.EPPOI.dto.ContactDTO;
-import com.example.EPPOI.dto.CoordsDTO;
+import com.example.EPPOI.dto.*;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.repository.*;
+import com.example.EPPOI.service.dtoManager.DtoEntityManager;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,15 +27,47 @@ public class PoiServiceImpl implements PoiService {
     private final TimeSlotRepository timeSlotRepository;
     private final PoiTypeRepository poiTypeRepository;
     private final TagRepository tagRepository;
+    private final DtoEntityManager<PoiTagRel, PoiTagRelDTO> poiTagRelDTOManager;
+    private final DtoEntityManager<CoordsNode, CoordsDTO> coordsDtoManager;
+    private final DtoEntityManager<PoiTypeNode, PoiTypeDTO> typeDtoManager;
+    private final DtoEntityManager<AddressNode, AddressDTO> addressDtoManager;
+    private final DtoEntityManager<ContactNode, ContactDTO> contactDtoManager;
+    private final DtoEntityManager<TimeSlotNode, TimeSlotDTO> timeDtoManager;
 
     @Override
     public PoiNode findPoiById(Long id) {
         return this.poiRepository.findById(id).orElseThrow(() -> new NullPointerException("PoiNode not found"));
     }
 
+    @Override
+    public PoiNode createPoiFromParams(PoiForm form) {
+        PoiNode result = new PoiNode();
+        result.setName(form.getName());
+        result.setDescription(form.getDescription());
+        result.setTimeToVisit(form.getTimeToVisit());
+        result.setTicketPrice(form.getTicketPrice());
+        log.info("settaggio base {} {} {} {}", result.getName(), result.getDescription(), result.getTimeToVisit()
+                , result.getTicketPrice());
+        result.setCoordinate(this.coordsDtoManager.getEntityfromDto(form.getCoordinate()));
+        log.info("settaggio coords {}",result.getCoordinate());
+        form.getTagValues().forEach(t -> result.getTagValues().add(this.poiTagRelDTOManager.getEntityfromDto(t)));
+        log.info("settaggio tagValues {}",result.getTagValues());
+        form.getTypes().forEach(t -> result.getTypes().add(this.typeDtoManager.getEntityfromDto(t)));
+        log.info("settaggio types {}",result.getTypes());
+        result.setAddress(this.addressDtoManager.getEntityfromDto(form.getAddress()));
+        log.info("settaggio address {}",result.getAddress());
+        result.setContact(this.contactDtoManager.getEntityfromDto(form.getContact()));
+        log.info("settaggio contact {}",result.getContact());
+        result.setHours(this.timeDtoManager.getEntityfromDto(form.getTimeSlot()));
+        log.info("settaggio time {}",result.getHours());
+        this.savePoi(result);
+        log.info("poi created : {}",result);
+        return result;
+    }
+
     private void emptyTimeSlot(TimeSlotNode toEmpty) {
         log.info("0");
-        log.info("timeslot : {}",toEmpty);
+        log.info("timeslot : {}", toEmpty);
         toEmpty.setMonday(new ArrayList<>());
         log.info("1");
         toEmpty.setTuesday(new ArrayList<>());
@@ -123,20 +154,12 @@ public class PoiServiceImpl implements PoiService {
         log.info("filled hours :{}", target.getHours());
         target.setTypes(new ArrayList<>());
         log.info("empty types :{}", target.getTypes());
-        toSet.getTypes().forEach(t -> target.getTypes().add(this.poiTypeRepository.findById(t.getId())
-                .orElseThrow(() -> new NullPointerException("This type not exists"))));
+        toSet.getTypes().forEach(t -> target.getTypes().add(this.typeDtoManager.getEntityfromDto(t)));
         log.info("filled types :{}", target.getTypes());
         target.setTagValues(new ArrayList<>());
         log.info("empty tags :{}", target.getTagValues());
-        if (!Objects.isNull(toSet.getTagValues())) {
-            toSet.getTagValues().forEach(t -> {
-                PoiTagRel rel = new PoiTagRel(this.tagRepository.findById(t.getTag().getId())
-                        .orElseThrow(() -> new NullPointerException("This type not exists")));
-                if (t.getTag().getIsBooleanType()) rel.setBooleanValue(t.getBooleanValue());
-                else rel.setStringValue(t.getStringValue());
-                target.getTagValues().add(rel);
-            });
-        }
+        if (!Objects.isNull(toSet.getTagValues()))
+            toSet.getTagValues().forEach(t -> target.getTagValues().add(this.poiTagRelDTOManager.getEntityfromDto(t)));
         log.info("filled tags :{}", target.getTagValues());
         this.poiRepository.save(target);
         log.info("filled target :{}", target);
@@ -146,6 +169,7 @@ public class PoiServiceImpl implements PoiService {
     @Override
     public void setCityToPoi(PoiNode poi, CityNode city) {
         city.getPOIs().add(poi);
+        log.info("adding poi: {} to city: {}",poi.getName(),city.getName());
         this.cityService.saveCity(city);
     }
 

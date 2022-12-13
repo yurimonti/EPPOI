@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -23,9 +24,14 @@ public class CityServiceImpl implements CityService {
         pois.forEach(p -> {
             log.info("finding city for poi: {}",p.getName());
             //Here
-            cities.add(this.getCityByPoi(p));
+            cities.add(this.getCityByPoi(p.getId()));
         });
         return cities.stream().distinct().toList();
+    }
+
+    @Override
+    public CityNode getCityById(Long cityId) {
+        return this.cityRepository.findById(cityId).orElseThrow(()-> new NullPointerException("No such city"));
     }
 
     @Override
@@ -34,16 +40,14 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public CityNode getCityByPoi(PoiNode poi) {
-        return this.getAllCities().stream().filter(c -> c.getPOIs().stream().map(PoiNode::getId).toList().contains(poi.getId())).findFirst()
-                .orElseThrow(()-> new NullPointerException("No such city contains this poi "+poi.getName()));
+    public CityNode getCityByPoi(Long poiId) {
+        return this.getAllCities().stream().filter(c -> c.getPOIs().stream().map(PoiNode::getId).toList().contains(poiId)).findFirst()
+                .orElseThrow(()-> new NullPointerException("No such city contains this poi "+poiId));
     }
 
     @Override
     public void saveCity(CityNode... toSave) {
-        for(CityNode city : toSave){
-            this.saveCity(city);
-        }
+        this.cityRepository.saveAll(Arrays.asList(toSave));
     }
 
     @Override

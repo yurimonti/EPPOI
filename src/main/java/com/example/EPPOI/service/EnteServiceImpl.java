@@ -1,12 +1,14 @@
 package com.example.EPPOI.service;
 
 import com.example.EPPOI.dto.CoordsDTO;
+import com.example.EPPOI.dto.PoiTagRelDTO;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.model.user.ThirdUserNode;
 import com.example.EPPOI.model.user.UserRoleNode;
 import com.example.EPPOI.repository.*;
+import com.example.EPPOI.service.dtoManager.DtoEntityManager;
 import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
@@ -26,31 +28,35 @@ public class EnteServiceImpl implements EnteService {
 
     private final GeneralUserService generalUserService;
     private final UserRoleRepository userRoleRepository;
+    private final DtoEntityManager<CoordsNode,CoordsDTO> coordsDTOManager;
+    private final DtoEntityManager<PoiTagRel, PoiTagRelDTO> poiTagRelDTOManager;
 
     private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
     private final PoiService poiService;
     private final ItineraryService itineraryService;
 
     //------------------------------------  POIs -----------------------------------------------------------------
+    //TODO: finire da implementare
     @Override
     public PoiNode createPoi(EnteNode ente, PoiForm form) {
-        CoordsDTO coordsDTO = form.getCoordinate();
-        CoordsNode coords = new CoordsNode(coordsDTO.getLat(), coordsDTO.getLon());
-        PoiNode result = new PoiNode(form.getName(), form.getDescription(), coords, form.getTimeToVisit());
+        PoiNode result = this.poiService.createPoiFromParams(form);
+        log.info("result");
         CityNode city = ente.getCity();
+        log.info("city {}",city.getName());
         this.poiService.setCityToPoi(result, city);
-        return this.poiService.savePoi(result);
+        log.info("city saved {}",ente.getCity().getName());
+        return result;
     }
 
 
     @Override
-    public PoiNode modifyPoi(EnteNode ente, PoiForm form,Long poiToModify) {
+    public PoiNode modifyPoi(EnteNode ente, PoiForm form,Long poiToModify) throws IllegalArgumentException{
         CityNode city = ente.getCity();
         log.info("city :{}",city.getName());
+        if(city.getPOIs().stream().map(PoiNode::getId).noneMatch(i -> i.equals(poiToModify)))
+            throw new IllegalArgumentException("This POI cannot be changed by this user");
         PoiNode toModify = this.poiService.findPoiById(poiToModify);
         log.info("poi to modify :{}",toModify.getName());
-        if(city.getPOIs().stream().noneMatch(p -> p.getId().equals(poiToModify)))
-            throw new NullPointerException("this Poi: "+toModify.getName()+" is not of this Ente: "+ente.getUsername());
         return this.poiService.setParamsToPoi(toModify,form);
     }
 
