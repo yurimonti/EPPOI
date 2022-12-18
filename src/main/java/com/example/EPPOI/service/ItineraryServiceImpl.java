@@ -48,11 +48,23 @@ public class ItineraryServiceImpl implements ItineraryService{
         if(Objects.isNull(toSave)) throw new IllegalArgumentException("the entity to save is null");
         this.itineraryRequestRepository.save(toSave);
     }
+    @Override
+    public ItineraryNode createBaseItinerary(String name,String description,List<PoiNode> points,
+                                             List<String> geoJsonList,boolean isDefault){
+        ItineraryNode result = new ItineraryNode(name,description);
+        result.setGeoJsonList(geoJsonList);
+        result.setIsDefault(isDefault);
+        result.setTimeToVisit(points.stream().map(PoiNode::getTimeToVisit).reduce(0.0,Double::sum));
+        this.fillItinerary(result,points);
+        return result;
+    }
 
     @Override
     public ItineraryNode createItineraryFromRequest(ItineraryRequestNode request) {
         ItineraryNode result = new ItineraryNode(request.getName(),request.getDescription());
+        result.setIsDefault(true);
         request.getPoints().forEach(p -> result.getPoints().add(new ItineraryRelPoi(p.getPoi(),p.getIndex())));
+        result.setTimeToVisit(request.getTimeToVisit());
         this.saveItinerary(result);
         return result;
     }

@@ -134,6 +134,15 @@ public class EnteController {
         return ResponseEntity.ok(ente.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList());
     }
 
+    @PostMapping("/poi-requests")
+    public ResponseEntity<?> acceptPoiRequests(HttpServletRequest request,@RequestBody Map<String,?> body){
+        EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        boolean consensus = (boolean)body.get("consensus");
+        Long idRequest = Long.parseLong((String)body.get("idRequest"));
+        this.enteService.setConsensusToPoiRequest(ente,idRequest,consensus);
+        return ResponseEntity.ok().build();
+    }
+
     //------------------------- THIRD  ------------------------------------------------
 
     @PostMapping("/third-registration")

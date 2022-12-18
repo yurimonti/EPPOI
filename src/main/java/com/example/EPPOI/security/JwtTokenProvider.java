@@ -24,7 +24,7 @@ public class JwtTokenProvider {
     public String generateJwtAccessToken(User user, String url) {
         TokenManager tokenManager = TokenManager.getInstance();
         return JWT.create().withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()*1000*60*5))
+                .withExpiresAt(new Date(System.currentTimeMillis()+1000*60*5))
                 .withIssuer(url)
                 .withClaim("role",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(tokenManager.getAccessAlgorithm());
@@ -32,7 +32,7 @@ public class JwtTokenProvider {
     public String generateJwtRefreshToken(User user, String url) {
         TokenManager tokenManager = TokenManager.getInstance();
         return JWT.create().withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()*1000*3600*24*7))
+                .withExpiresAt(new Date(System.currentTimeMillis()+1000*3600*24*7))
                 .withIssuer(url)
                 .withClaim("role",user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(tokenManager.getRefreshAlgorithm());

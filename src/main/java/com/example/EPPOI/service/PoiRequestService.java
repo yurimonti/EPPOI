@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface PoiRequestService {
 
+    RequestPoiNode getRequestById(Long idRequest) throws NullPointerException;
     void saveRequest(RequestPoiNode toSave);
     RequestPoiNode createPoiRequestFromParams(PoiForm form);
     PoiRequestDTO getDTOfromRequest(RequestPoiNode from);

@@ -62,6 +62,7 @@ com\example\EPPOI\model\poi\EVSharingNode.class
 com\example\EPPOI\model\user\UserNode.class
 com\example\EPPOI\service\dtoManager\AddressDtoManager.class
 com\example\EPPOI\repository\ItineraryRepository.class
+com\example\EPPOI\dto\ItRelPoiDTO.class
 com\example\EPPOI\security\JwtTokenProvider.class
 com\example\EPPOI\security\SecurityConfig.class
 com\example\EPPOI\dto\PoiRequestDTO.class
@@ -83,6 +84,7 @@ com\example\EPPOI\security\CustomAuthorizationFilter.class
 com\example\EPPOI\service\CityService.class
 com\example\EPPOI\model\poi\PoiNode.class
 com\example\EPPOI\model\ItineraryNode.class
+com\example\EPPOI\dto\ItineraryDTO.class
 com\example\EPPOI\model\AddressNode.class
 com\example\EPPOI\repository\TagRepository.class
 com\example\EPPOI\service\AppUserService.class

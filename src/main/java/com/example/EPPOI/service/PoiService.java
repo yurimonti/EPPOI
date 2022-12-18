@@ -17,6 +17,8 @@ public interface PoiService {
 
     PoiNode setParamsToPoi(PoiNode target, PoiForm toSet);
 
+    PoiNode poiFromRequest(RequestPoiNode toSet);
+
     void setCityToPoi(PoiNode poi,CityNode city);
 
     PoiNode savePoi(PoiNode toSave);

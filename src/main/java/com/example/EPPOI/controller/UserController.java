@@ -1,5 +1,6 @@
 package com.example.EPPOI.controller;
 
+import com.example.EPPOI.dto.PoiDTO;
 import com.example.EPPOI.model.ItineraryNode;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.RequestPoiNode;
@@ -11,6 +12,7 @@ import com.example.EPPOI.service.*;
 import com.example.EPPOI.utility.PoiParamsProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,22 @@ public class UserController {
 
     private final UserNodeRepository userNodeRepository;
 
+    @GetMapping("/pois")
+    public ResponseEntity<List<PoiDTO>> getPois(){
+        return ResponseEntity.ok(this.poiService.getAllPois().stream().map(PoiDTO::new).toList());
+    }
+
+    @GetMapping("/pois/{id}")
+    public ResponseEntity<PoiDTO> getPoi(@PathVariable String id){
+        log.info("start");
+        PoiNode poi;
+        try{
+            poi = this.poiService.findPoiById(Long.parseLong(id));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(new PoiDTO(poi));
+    }
     private List<PoiNode> idsToPois(List<Long> ids){
         List<PoiNode> result = new ArrayList<>();
         for(Long id : ids){
@@ -42,43 +60,5 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserNode>> getAllUsers(){
         return ResponseEntity.ok(this.userNodeRepository.findAll());
-    }
-
-    @GetMapping("/pois")
-    public ResponseEntity<List<PoiNode>> getPois(){
-        return ResponseEntity.ok(this.poiService.getAllPois());
-    }
-    //FIXME: rivedere metodo
-/*    @PostMapping("/poi_request")
-    public ResponseEntity<RequestPoiNode> createRequestPoi(@RequestParam String username,
-                                                           @RequestBody Map<String, Object> body){
-        TouristNode tourist;
-        try{
-            tourist =  this.touristService.getUserByUsername(username);
-        }catch(Exception e){
-            return ResponseEntity.badRequest().build();
-        }
-        log.info("tourist {}",tourist);
-        RequestPoiNode result = this.touristService.createRequestPoi(tourist,PoiParamsProvider.getFromBody(body),
-                this.cityRepository.findById(Long.parseLong((String) body.get("city"))).get());
-        return ResponseEntity.ok(result);
-    }*/
-
-    @PostMapping("/itinerary")
-    public ResponseEntity<String> createItinerary(@RequestParam String username ,@RequestBody Map<String,Object> body) {
-        TouristNode tourist;
-        try{
-            tourist =  this.touristService.getUserByUsername(username);
-        }catch(Exception e){
-            return ResponseEntity.ok(e.getMessage());
-        }
-        log.info("tourist {}",tourist);
-        String name = (String)body.get("name");
-        String description = (String)body.get("description");
-        List<Long> ids = new ArrayList<>();
-        List<String> s = (List<String>) body.get("ids");
-        s.forEach(i -> ids.add(Long.parseLong(i)));
-        ItineraryNode result = this.touristService.createItinerary(tourist,name, description, this.idsToPois(ids));
-        return ResponseEntity.ok(result.toString());
     }
 }

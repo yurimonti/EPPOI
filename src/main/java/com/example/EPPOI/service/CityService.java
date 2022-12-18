@@ -16,7 +16,9 @@ public interface CityService {
     List<CityNode> getAllCities();
 
     CityNode getCityByPoi(Long poiId);
-    void saveCity(CityNode ...toSave);
+    void saveCity(CityNode toSave);
+
+    void saveCities(List<CityNode> toSave);
 
     void addItinerary(CityNode city,ItineraryNode target);
 

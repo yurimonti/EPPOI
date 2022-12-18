@@ -19,5 +19,6 @@ public interface EnteService extends AppUserService<EnteNode> {
     void deleteRegistrationRequest(EnteNode ente,ThirdPartyRegistrationRequest target);
     EnteRepository getRepository();
 
+    void setConsensusToPoiRequest(EnteNode ente,Long idRequest,Boolean consensus);
     ItineraryRequestNode createItineraryRequest(EnteNode ente, ItineraryForm itineraryForm);
 }

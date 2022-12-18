@@ -19,6 +19,7 @@ public class ItineraryNode {
     private String name;
     private String description;
     private String createdBy;
+    private Boolean isDefault;
     @Relationship(type = "ITINERARY_CONTAINS_POI",direction = Relationship.Direction.OUTGOING)
     private List<ItineraryRelPoi> points;
     private Double timeToVisit;

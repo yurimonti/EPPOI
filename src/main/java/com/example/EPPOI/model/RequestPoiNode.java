@@ -36,8 +36,8 @@ public class RequestPoiNode {
     private List<PoiTagRel> tagValues;
 
     //TODO: consider to get this value directly from User who made that
-    @Relationship(type = "POI_REQUEST_REQUIRED_BY",direction = Relationship.Direction.INCOMING)
-    private UserNode madeBy;
+    /*@Relationship(type = "POI_REQUEST_REQUIRED_BY",direction = Relationship.Direction.INCOMING)*/
+    private String createdBy;
     private PoiNode target;
 
     public RequestPoiNode() {

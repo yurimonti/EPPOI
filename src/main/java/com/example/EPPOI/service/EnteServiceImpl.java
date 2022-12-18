@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class EnteServiceImpl implements EnteService {
     private final UserRoleRepository userRoleRepository;
     private final DtoEntityManager<CoordsNode,CoordsDTO> coordsDTOManager;
     private final DtoEntityManager<PoiTagRel, PoiTagRelDTO> poiTagRelDTOManager;
-
+    private final PoiRequestService poiRequestService;
     private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
     private final PoiService poiService;
     private final ItineraryService itineraryService;
@@ -60,13 +61,32 @@ public class EnteServiceImpl implements EnteService {
         return this.poiService.setParamsToPoi(toModify,form);
     }
 
+    @Override
+    public void setConsensusToPoiRequest(EnteNode ente,Long idRequest, Boolean consensus) {
+        RequestPoiNode toSet = this.poiRequestService.getRequestById(idRequest);
+        if(consensus){
+            if(!toSet.getIsAccepted()){
+                toSet.setIsAccepted(true);
+                PoiNode poi = this.poiService.poiFromRequest(toSet);
+                CityNode city = ente.getCity();
+                if(city.getPOIs()
+                        .stream()
+                        .map(PoiNode::getId)
+                        .noneMatch(id -> poi.getId().equals(id))) {
+                    city.getPOIs().add(poi);
+                    this.cityService.saveCity(city);
+                }
+            }
+        } else toSet.setIsAccepted(false);
+        this.poiRequestService.saveRequest(toSet);
+    }
     //------------------------------------  ITINERARIES ----------------------------------------------------------
     @Override
     public ItineraryNode createItinerary(EnteNode ente, ItineraryForm itineraryForm) {
-        ItineraryNode result = new ItineraryNode(itineraryForm.getName(), itineraryForm.getDescription());
         List<PoiNode> POIsToAdd = new ArrayList<>();
         itineraryForm.getPOIsId().forEach(i -> POIsToAdd.add(this.poiService.findPoiById(i)));
-        this.itineraryService.fillItinerary(result, POIsToAdd);
+        ItineraryNode result = this.itineraryService.createBaseItinerary(itineraryForm.getName(),
+                itineraryForm.getDescription(),POIsToAdd,itineraryForm.getGeoJsonList(),true);
         CityNode city = ente.getCity();
         city.getItineraries().add(result);
         this.cityService.saveCity(city);
@@ -87,6 +107,7 @@ public class EnteServiceImpl implements EnteService {
             PoiNode p = this.poiService.findPoiById(i);
             POIsToAdd.add(p);
         });
+        result.setTimeToVisit(POIsToAdd.stream().map(PoiNode::getTimeToVisit).reduce(0.0,Double::sum));
         log.info("2");
         List<CityNode> cities = this.cityService.getCitiesByPoi(POIsToAdd);
         log.info("cities : {}",cities.stream().map(CityNode::getName).toList());
@@ -100,6 +121,7 @@ public class EnteServiceImpl implements EnteService {
         return result;
     }
 
+    //consensus false and number of consensus  0 -> rejected, number consensus > 0 and consensus false -> pending, 0 and true -> accepted
     @Override
     public void setConsensusToItinerary(EnteNode ente, ItineraryRequestNode target, boolean consensus) {
         ItineraryRequestRel request = ente.getItineraryRequests().stream()
@@ -113,7 +135,6 @@ public class EnteServiceImpl implements EnteService {
                 if (target.getConsensus() == 0) {
                     target.setAccepted(true);
                     ItineraryNode it = this.itineraryService.createItineraryFromRequest(target);
-                    this.itineraryService.saveItinerary(it);
                     this.enteRepository.findAll().stream()
                             .filter(e -> e.getItineraryRequests().stream()
                                     .map(ItineraryRequestRel::getRequest)
@@ -179,6 +200,8 @@ public class EnteServiceImpl implements EnteService {
     public EnteRepository getRepository() {
         return this.enteRepository;
     }
+
+
 
 
     @Override

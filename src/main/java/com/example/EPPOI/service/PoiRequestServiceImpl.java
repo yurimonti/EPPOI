@@ -31,6 +31,12 @@ public class PoiRequestServiceImpl implements PoiRequestService {
     private final DtoEntityManager<TimeSlotNode, TimeSlotDTO> timeDtoManager;
 
     @Override
+    public RequestPoiNode getRequestById(Long idRequest) throws NullPointerException {
+        return this.requestPoiRepository.findById(idRequest)
+                .orElseThrow(()-> new NullPointerException("No such request with id: "+idRequest));
+    }
+
+    @Override
     public void saveRequest(RequestPoiNode toSave) {
         this.requestPoiRepository.save(toSave);
     }
@@ -76,7 +82,8 @@ public class PoiRequestServiceImpl implements PoiRequestService {
                 .findFirst()
                 .orElseThrow(NullPointerException::new)
                 .getUsername();*/
-        String username = from.getMadeBy().getUsername();
+        //String username = from.getMadeBy().getUsername();
+        String username = from.getCreatedBy();
         CityDTO cityDto = null;
         PoiDTO target = null;
         if (!Objects.isNull(from.getTarget())) {

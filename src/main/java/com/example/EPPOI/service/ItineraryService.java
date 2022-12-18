@@ -18,4 +18,7 @@ public interface ItineraryService {
     void saveItinerary(ItineraryRequestNode toSave);
 
     ItineraryNode createItineraryFromRequest(ItineraryRequestNode request);
+
+    ItineraryNode createBaseItinerary(String name,String description,List<PoiNode> points,
+                                      List<String> geoJsonList,boolean isDefault);
 }

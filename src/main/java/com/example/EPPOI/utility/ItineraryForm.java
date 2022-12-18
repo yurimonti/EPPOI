@@ -13,4 +13,5 @@ public class ItineraryForm {
     private String name;
     private String description;
     private List<Long> POIsId;
+    private List<String> geoJsonList;
 }

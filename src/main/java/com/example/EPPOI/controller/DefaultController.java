@@ -3,14 +3,17 @@ package com.example.EPPOI.controller;
 import com.example.EPPOI.dto.CityDTO;
 import com.example.EPPOI.dto.PoiDTO;
 import com.example.EPPOI.model.CityNode;
+import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.repository.CityRepository;
 import com.example.EPPOI.repository.PoiRepository;
 import com.example.EPPOI.service.CityService;
 import com.example.EPPOI.service.PoiService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;

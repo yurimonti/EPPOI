@@ -55,15 +55,15 @@ public class AuthController {
     private final EnteRepository enteRepository;
 
     @Data
-    private static class UserBody{
+    private static class UserBody {
         private String username;
         private String password;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserBody body) {
-        log.info("Body {}",body);
-        Map<String,String> tokens;
+        log.info("Body {}", body);
+        Map<String, String> tokens;
         try {
             tokens = this.customAuthenticationFilter.authenticate(body.getUsername(), body.getPassword(), "http://localhost:8080/api/v1/auth/login");
         } catch (Exception e) {
@@ -73,48 +73,48 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> signup(@RequestBody Map<String,Object> body) {
-        String username = (String)body.get("username");
-        String password = (String)body.get("password");
-        String email = (String)body.get("email");
-        String name = (String)body.get("name");
-        String surname = (String)body.get("surname");
+    public ResponseEntity<?> signup(@RequestBody Map<String, Object> body) {
+        String username = (String) body.get("username");
+        String password = (String) body.get("password");
+        String email = (String) body.get("email");
+        String name = (String) body.get("name");
+        String surname = (String) body.get("surname");
         UserRoleNode role = this.userRoleRepository.findByName("TOURIST");
-        UserNode user = new TouristNode(name, surname, email, password, username,role);
+        UserNode user = new TouristNode(name, surname, email, password, username, role);
         this.userService.saveUser(user);
-        log.info("user registered {}",user);
+        log.info("user registered {}", user);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/registration-ente")
-    public ResponseEntity<?> signupEnte(@RequestBody Map<String,Object> body) {
-        String username = (String)body.get("username");
-        String password = (String)body.get("password");
-        String email = (String)body.get("email");
-        String name = (String)body.get("name");
-        String surname = (String)body.get("surname");
+    public ResponseEntity<?> signupEnte(@RequestBody Map<String, Object> body) {
+        String username = (String) body.get("username");
+        String password = (String) body.get("password");
+        String email = (String) body.get("email");
+        String name = (String) body.get("name");
+        String surname = (String) body.get("surname");
         Long cityId = Long.parseLong((String) body.get("cityId"));
         UserRoleNode role = this.userRoleRepository.findByName("ENTE");
         CityNode cityNode = this.cityRepository.findById(cityId)
-                .orElseThrow(()-> new NullPointerException("No such city"));
-        UserNode user = new EnteNode(name, surname, email, password, username,cityNode,role);
+                .orElseThrow(() -> new NullPointerException("No such city"));
+        UserNode user = new EnteNode(name, surname, email, password, username, cityNode, role);
         this.userService.saveUser(user);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/registration-third")
-    public ResponseEntity<?> signupThird(@RequestBody Map<String,Object> body) {
-        String username = (String)body.get("username");
-        String password = (String)body.get("password");
-        String email = (String)body.get("email");
-        String name = (String)body.get("name");
-        String surname = (String)body.get("surname");
+    public ResponseEntity<?> signupThird(@RequestBody Map<String, Object> body) {
+        String username = (String) body.get("username");
+        String password = (String) body.get("password");
+        String email = (String) body.get("email");
+        String name = (String) body.get("name");
+        String surname = (String) body.get("surname");
         List<Long> cityIds = ((List<String>) body.get("cityNames")).stream().map(Long::parseLong).toList();
         List<EnteNode> entes = new ArrayList<>();
         cityIds.forEach(cityId -> entes.addAll(this.enteRepository.findAll().stream().filter(e ->
                 e.getCity().getId().equals(cityId)).toList()));
         ThirdPartyRegistrationRequest result =
-                new ThirdPartyRegistrationRequest(name, surname, email, password, username,entes.size());
+                new ThirdPartyRegistrationRequest(name, surname, email, password, username, entes.size());
         this.thirdRequestRegistrationRepository.save(result);
         entes.forEach(enteNode -> {
             enteNode.getRegistrationRequests().add(new ThirdPartyRegistrationRel(result, false));
@@ -126,36 +126,36 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public void refresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authorizationHeader = request.getHeader("Authorization");
-        if(authorizationHeader!=null) {
-            try{
-                String refresh_token = authorizationHeader.substring("Bearer ".length());
-                TokenManager tokenManager = TokenManager.getInstance();
-                JWTVerifier verifier = JWT.require(tokenManager.getAccessAlgorithm()).build();
-                DecodedJWT decodedJWT = verifier.verify(refresh_token);
-                String username = decodedJWT.getSubject();
-                UserNode user = this.userService.getUser(username);
-                String access_token = JWT.create().withSubject(user.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis()*1000*60*5))
-                        .withIssuer("http://localhost:8080/api/v1/auth/refresh")
-                        .withClaim("role",user.getRoles().stream().map(UserRoleNode::getName).collect(Collectors.toList()))
-                        .sign(tokenManager.getAccessAlgorithm());
-                Map<String,String> tokens = new HashMap<>();
-                tokens.put("access_token",access_token);
-                tokens.put("refresh_token",refresh_token);
-                response.setContentType("application/json");
-                new ObjectMapper().writeValue(response.getOutputStream(),tokens);
-            }catch(Exception exception){
-                response.setHeader("error", exception.getMessage());
-                response.setStatus(HttpStatus.FORBIDDEN.value());
-                Map<String,String> errors = new HashMap<>();
-                errors.put("error", exception.getMessage());
-                response.setContentType("application/json");
-                new ObjectMapper().writeValue(response.getOutputStream(),errors);
-            }
-        }else{
-            throw new RuntimeException("RefreshToken is invalid");
+    public void refresh(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> body) throws IOException {
+        try {
+            String refresh_token = body.get("refresh_token");
+            TokenManager tokenManager = TokenManager.getInstance();
+            JWTVerifier verifier = JWT.require(tokenManager.getRefreshAlgorithm()).build();
+            DecodedJWT decodedJWT = verifier.verify(refresh_token);
+            String username = decodedJWT.getSubject();
+            UserNode user = this.userService.getUser(username);
+            String access_token = JWT.create().withSubject(user.getUsername())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
+                    .withIssuer("http://localhost:8080/api/v1/auth/refresh")
+                    .withClaim("role", user.getRoles().stream().map(UserRoleNode::getName).collect(Collectors.toList()))
+                    .sign(tokenManager.getAccessAlgorithm());
+            String new_refresh = JWT.create().withSubject(user.getUsername())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 3600 * 7 * 24))
+                    .withIssuer("http://localhost:8080/api/v1/auth/refresh")
+                    .withClaim("role", user.getRoles().stream().map(UserRoleNode::getName).collect(Collectors.toList()))
+                    .sign(tokenManager.getRefreshAlgorithm());
+            Map<String, String> tokens = new HashMap<>();
+            tokens.put("access_token", access_token);
+            tokens.put("refresh_token", new_refresh);
+            response.setContentType("application/json");
+            new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+        } catch (Exception exception) {
+            response.setHeader("error", exception.getMessage());
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            Map<String, String> errors = new HashMap<>();
+            errors.put("error", exception.getMessage());
+            response.setContentType("application/json");
+            new ObjectMapper().writeValue(response.getOutputStream(), errors);
         }
     }
 

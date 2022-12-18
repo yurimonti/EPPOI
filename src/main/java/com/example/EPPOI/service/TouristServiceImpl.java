@@ -6,6 +6,7 @@ import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.model.user.UserRoleNode;
 import com.example.EPPOI.repository.*;
+import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class TouristServiceImpl implements TouristService {
 
-    private final ItineraryRepository itineraryRepository;
+    private final ItineraryService itineraryService;
     private final CityService cityService;
     private final TouristRepository touristRepository;
     private final UserRoleRepository userRoleRepository;
@@ -30,6 +31,8 @@ public class TouristServiceImpl implements TouristService {
     private final PoiRequestService poiRequestService;
 
     private void addItineraryToUser(TouristNode tourist, ItineraryNode toAdd) {
+        toAdd.setCreatedBy(tourist.getUsername());
+        this.itineraryService.saveItinerary(toAdd);
         tourist.getItineraries().add(toAdd);
         this.touristRepository.save(tourist);
     }
@@ -47,22 +50,20 @@ public class TouristServiceImpl implements TouristService {
     }
 
     @Override
-    public ItineraryNode createItinerary(TouristNode creator, String name, String description, List<PoiNode> POIs) {
-        ItineraryNode result = new ItineraryNode(name, description);
-        for (int i = 1; i <= POIs.size(); i++) {
-            PoiNode poi = POIs.get(i - 1);
-            result.getPoints().add(new ItineraryRelPoi(poi, i));
-        }
-        this.itineraryRepository.save(result);
+    public ItineraryNode createItinerary(TouristNode creator, ItineraryForm form) {
+        List<PoiNode> POIsToAdd = new ArrayList<>();
+        form.getPOIsId().forEach(i -> POIsToAdd.add(this.poiService.findPoiById(i)));
+        ItineraryNode result = this.itineraryService.createBaseItinerary(form.getName(),
+                form.getDescription(),POIsToAdd,form.getGeoJsonList(),false);
         List<CityNode> cities = new ArrayList<>();
-        for (PoiNode p : POIs) {
+        for (PoiNode p : POIsToAdd) {
             cities.add(this.cityService.getCityByPoi(p.getId()));
         }
         cities.forEach(cityNode -> {
             cityNode.getItineraries().add(result);
             //this.cityRepository.save(cityNode);
         });
-        this.cityService.saveCity(cities.toArray(CityNode[]::new));
+        this.cityService.saveCities(cities);
         this.addItineraryToUser(creator, result);
         return result;
     }
@@ -71,13 +72,11 @@ public class TouristServiceImpl implements TouristService {
     @Override
     public RequestPoiNode createRequestPoi(TouristNode creator, PoiForm params, Long cityId) {
         RequestPoiNode result = this.poiRequestService.createPoiRequestFromParams(params);
-        result.setMadeBy(creator);
+        result.setCreatedBy(creator.getUsername());
         log.info("setting madeBy {}", creator.getUsername());
-
-        log.info("saving result after madeBy {}", result.getMadeBy().getUsername());
-        /*creator.getPoiRequests().add(result);
+        creator.getPoiRequests().add(result);
         this.touristRepository.save(creator);
-        log.info("saving creator {}",creator.getPoiRequests().size());*/
+        log.info("saving creator {}",creator.getPoiRequests().size());
         List<EnteNode> entes;
         if (Objects.isNull(params.getIdPoi()))
             entes = this.isNewFilter(true, cityId);
@@ -116,13 +115,14 @@ public class TouristServiceImpl implements TouristService {
 
     private List<EnteNode> isNewFilter(boolean isNew, Long filter) {
         Stream<EnteNode> optionals = this.enteRepository.findAll().stream();
+        List<EnteNode> result;
         if (isNew) {
-            return optionals
-                    .filter(e -> e.getCity().getId().equals(filter))
-                    .toList();
-        } else return optionals
-                .filter(e -> e.getCity().getId().equals(this.cityService.getCityByPoi(filter).getId()))
-                .toList();
+            result = optionals
+                    .filter(e -> e.getCity().getId().equals(filter)).toList();
+        } else result = optionals
+                .filter(e -> e.getCity().getId().equals(this.cityService.getCityByPoi(filter).getId())).toList();
+        if(result.isEmpty()) throw new NullPointerException();
+        return result;
     }
 
     @Override

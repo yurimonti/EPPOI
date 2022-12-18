@@ -49,19 +49,19 @@ public class PoiServiceImpl implements PoiService {
         log.info("settaggio base {} {} {} {}", result.getName(), result.getDescription(), result.getTimeToVisit()
                 , result.getTicketPrice());
         result.setCoordinate(this.coordsDtoManager.getEntityfromDto(form.getCoordinate()));
-        log.info("settaggio coords {}",result.getCoordinate());
+        log.info("settaggio coords {}", result.getCoordinate());
         form.getTagValues().forEach(t -> result.getTagValues().add(this.poiTagRelDTOManager.getEntityfromDto(t)));
-        log.info("settaggio tagValues {}",result.getTagValues());
+        log.info("settaggio tagValues {}", result.getTagValues());
         form.getTypes().forEach(t -> result.getTypes().add(this.typeDtoManager.getEntityfromDto(t)));
-        log.info("settaggio types {}",result.getTypes());
+        log.info("settaggio types {}", result.getTypes());
         result.setAddress(this.addressDtoManager.getEntityfromDto(form.getAddress()));
-        log.info("settaggio address {}",result.getAddress());
+        log.info("settaggio address {}", result.getAddress());
         result.setContact(this.contactDtoManager.getEntityfromDto(form.getContact()));
-        log.info("settaggio contact {}",result.getContact());
+        log.info("settaggio contact {}", result.getContact());
         result.setHours(this.timeDtoManager.getEntityfromDto(form.getTimeSlot()));
-        log.info("settaggio time {}",result.getHours());
+        log.info("settaggio time {}", result.getHours());
         this.savePoi(result);
-        log.info("poi created : {}",result);
+        log.info("poi created : {}", result);
         return result;
     }
 
@@ -167,9 +167,36 @@ public class PoiServiceImpl implements PoiService {
     }
 
     @Override
+    public PoiNode poiFromRequest(RequestPoiNode toSet) {
+        PoiNode result;
+        result = Objects.isNull(toSet.getTarget()) ? new PoiNode() : toSet.getTarget();
+        result.setName(toSet.getName());
+        result.setDescription(toSet.getDescription());
+        result.setTimeToVisit(toSet.getTimeToVisit());
+        result.setTicketPrice(toSet.getTicketPrice());
+        result.getContributors().add(toSet.getCreatedBy());
+        log.info("settaggio base {} {} {} {}", result.getName(), result.getDescription(), result.getTimeToVisit()
+                , result.getTicketPrice());
+        result.setCoordinate(toSet.getCoordinate());
+        toSet.getTagValues().forEach(t -> result.getTagValues().add(t));
+        log.info("settaggio tagValues {}", result.getTagValues());
+        toSet.getTypes().forEach(t -> result.getTypes().add(t));
+        log.info("settaggio types {}", result.getTypes());
+        result.setAddress(toSet.getAddress());
+        log.info("settaggio address {}", result.getAddress());
+        result.setContact(toSet.getContact());
+        log.info("settaggio contact {}", result.getContact());
+        result.setHours(toSet.getHours());
+        log.info("settaggio time {}", result.getHours());
+        this.savePoi(result);
+        log.info("poi created : {}", result);
+        return result;
+    }
+
+    @Override
     public void setCityToPoi(PoiNode poi, CityNode city) {
         city.getPOIs().add(poi);
-        log.info("adding poi: {} to city: {}",poi.getName(),city.getName());
+        log.info("adding poi: {} to city: {}", poi.getName(), city.getName());
         this.cityService.saveCity(city);
     }
 

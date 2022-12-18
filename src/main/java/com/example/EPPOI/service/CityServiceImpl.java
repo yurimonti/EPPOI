@@ -46,8 +46,14 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public void saveCity(CityNode... toSave) {
-        this.cityRepository.saveAll(Arrays.asList(toSave));
+    public void saveCity(CityNode toSave) {
+        this.cityRepository.save(toSave);
+    }
+
+
+    @Override
+    public void saveCities(List<CityNode> toSave) {
+        this.cityRepository.saveAll(toSave);
     }
 
     @Override
