@@ -98,8 +98,8 @@ public class EppoiApplication {
 			categoryRepository.save(spirituale);
 			CategoryNode architetturale =  new CategoryNode("Architetturale");
 			categoryRepository.save(architetturale);
-			CategoryNode gastronomia =  new CategoryNode("Gastronomia");
-			categoryRepository.save(gastronomia);
+			CategoryNode ristorazione =  new CategoryNode("Ristorazione");
+			categoryRepository.save(ristorazione);
 			CategoryNode naturalistica =  new CategoryNode("Naturalistica");
 			categoryRepository.save(naturalistica);
 			CategoryNode fontanella =  new CategoryNode("Fontanella");
@@ -167,7 +167,7 @@ public class EppoiApplication {
 					Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(museo);
 
-			PoiTypeNode ristorante = new PoiTypeNode("Ristorante",Arrays.asList(gastronomia),
+			PoiTypeNode ristorante = new PoiTypeNode("Ristorante",Arrays.asList(ristorazione),
 					Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(ristorante);
 
@@ -175,7 +175,7 @@ public class EppoiApplication {
 					Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(parco);
 
-			PoiTypeNode enoteca = new PoiTypeNode("Enoteca",Arrays.asList(naturalistica,gastronomia),
+			PoiTypeNode enoteca = new PoiTypeNode("Enoteca",Arrays.asList(naturalistica,ristorazione),
 					Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(enoteca);
 

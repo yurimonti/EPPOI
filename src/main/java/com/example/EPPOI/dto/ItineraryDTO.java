@@ -17,6 +17,7 @@ public class ItineraryDTO {
     private String createdBy;
     private Boolean isDefault;
     private List<ItRelPoiDTO> points;
+    private List<CategoryDTO> categories;
     private Double timeToVisit;
     private List<String> geoJsonList;
 
@@ -29,6 +30,7 @@ public class ItineraryDTO {
         this.isDefault = from.getIsDefault();
         this.points = from.getPoints().stream().map(ItRelPoiDTO::new).toList();
         this.timeToVisit = from.getTimeToVisit();
+        this.categories = from.getCategories().stream().map(CategoryDTO::new).toList();
         this.geoJsonList = from.getGeoJsonList();
     }
 }

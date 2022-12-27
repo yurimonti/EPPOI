@@ -1,5 +1,6 @@
 package com.example.EPPOI.service;
 
+import com.example.EPPOI.dto.PoiDTO;
 import com.example.EPPOI.dto.PoiRequestDTO;
 import com.example.EPPOI.model.CityNode;
 import com.example.EPPOI.model.RequestPoiNode;
@@ -13,6 +14,8 @@ import java.util.List;
 public interface PoiService {
     PoiNode findPoiById(Long id);
 
+    void deletePoi(PoiNode toDelete) throws NullPointerException,IllegalArgumentException;
+
     PoiNode createPoiFromParams(PoiForm form);
 
     PoiNode setParamsToPoi(PoiNode target, PoiForm toSet);
@@ -20,6 +23,8 @@ public interface PoiService {
     PoiNode poiFromRequest(RequestPoiNode toSet);
 
     void setCityToPoi(PoiNode poi,CityNode city);
+
+    PoiDTO createDTOfromNode(PoiNode poi);
 
     PoiNode savePoi(PoiNode toSave);
     List<PoiNode> getAllPois();

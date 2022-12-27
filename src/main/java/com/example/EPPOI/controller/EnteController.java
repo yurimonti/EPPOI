@@ -1,5 +1,7 @@
 package com.example.EPPOI.controller;
 
+import com.example.EPPOI.dto.ItineraryDTO;
+import com.example.EPPOI.dto.ItineraryRequestDTO;
 import com.example.EPPOI.dto.PoiDTO;
 import com.example.EPPOI.model.CityNode;
 import com.example.EPPOI.model.ItineraryRequestNode;
@@ -11,6 +13,7 @@ import com.example.EPPOI.repository.ItineraryRequestRepository;
 import com.example.EPPOI.repository.ThirdRequestRegistrationRepository;
 import com.example.EPPOI.service.EnteService;
 import com.example.EPPOI.service.PoiRequestService;
+import com.example.EPPOI.service.PoiService;
 import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.MiddlewareToken;
 import com.example.EPPOI.utility.PoiForm;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/ente")
@@ -34,126 +38,158 @@ public class EnteController {
 
     private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
-
+    private final PoiService poiService;
     private final PoiRequestService poiRequestService;
     private EnteService enteService;
 
     public EnteController(EnteService enteService, ThirdRequestRegistrationRepository thirdRequestRegistrationRepository,
-                          ItineraryRequestRepository itineraryRequestRepository,PoiRequestService poiRequestService) {
+                          ItineraryRequestRepository itineraryRequestRepository, PoiRequestService poiRequestService,
+                          PoiService poiService) {
         this.enteService = enteService;
         this.thirdRequestRegistrationRepository = thirdRequestRegistrationRepository;
         this.middlewareToken = new MiddlewareToken<>(enteService.getRepository());
         this.itineraryRequestRepository = itineraryRequestRepository;
         this.poiRequestService = poiRequestService;
+        this.poiService = poiService;
     }
 
     @GetMapping
-    public ResponseEntity<EnteNode> getUserInfo(HttpServletRequest request){
+    public ResponseEntity<EnteNode> getUserInfo(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         return ResponseEntity.ok(ente);
     }
+
     @GetMapping("/city")
-    public ResponseEntity<CityNode> getCity(HttpServletRequest request){
+    public ResponseEntity<CityNode> getCity(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         return ResponseEntity.ok(ente.getCity());
     }
+
     //------------------------- ITINERARY Req------------------------------------------------
     @GetMapping("/itinerary-request")
-    public ResponseEntity<?> createItinerary(HttpServletRequest request){
+    public ResponseEntity<?> createItinerary(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         return ResponseEntity.ok(ente.getItineraryRequests());
     }
 
     @PostMapping("/itinerary-request")
-    public ResponseEntity<?> setConsensusToItinerary(HttpServletRequest req,@RequestBody Map<String,?> body){
+    public ResponseEntity<?> setConsensusToItinerary(HttpServletRequest req, @RequestBody Map<String, ?> body) {
         EnteNode ente = this.middlewareToken.getUserFromToken(req);
-        Long idRequest = Long.parseLong((String)body.get("idRequest"));
-        log.info("request id {}",idRequest);
+        Long idRequest = Long.parseLong((String) body.get("idRequest"));
+        log.info("request id {}", idRequest);
         Boolean consensus = (Boolean) body.get("consensus");
-        log.info("request consensus {}",consensus);
-        if(ente.getItineraryRequests().stream()
+        log.info("request consensus {}", consensus);
+        if (ente.getItineraryRequests().stream()
                 .map(ItineraryRequestRel::getRequest)
                 .map(ItineraryRequestNode::getId)
                 .noneMatch(l -> l.equals(idRequest)))
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         ItineraryRequestNode request = this.itineraryRequestRepository.findById(idRequest).get();
-        this.enteService.setConsensusToItinerary(ente,request,consensus);
+        this.enteService.setConsensusToItinerary(ente, request, consensus);
         return ResponseEntity.ok().build();
     }
 
-        //------------------------- ITINERARY ------------------------------------------------
+    //------------------------- ITINERARY ------------------------------------------------
 
     @GetMapping("/itinerary")
-    public ResponseEntity<?> getItineraries(HttpServletRequest request){
+    public ResponseEntity<?> getItineraries(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         return ResponseEntity.ok(ente.getCity().getItineraries());
     }
 
     @PostMapping("/itinerary")
-    public ResponseEntity<?> createItinerary(@RequestBody ItineraryForm itineraryForm, HttpServletRequest request){
+    public ResponseEntity<?> createItinerary(@RequestBody ItineraryForm itineraryForm, HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        if(new HashSet<>(ente.getCity().getPOIs().stream().map(PoiNode::getId).toList())
-                .containsAll(itineraryForm.getPOIsId())){
-            return ResponseEntity.ok(this.enteService.createItinerary(ente,itineraryForm));
-        } else return ResponseEntity.ok(this.enteService.createItineraryRequest(ente,itineraryForm));
+        if (new HashSet<>(ente.getCity().getPOIs().stream().map(PoiNode::getId).toList())
+                .containsAll(itineraryForm.getPOIsId())) {
+            return ResponseEntity.ok(new ItineraryDTO(this.enteService.createItinerary(ente, itineraryForm)));
+        } else return ResponseEntity.ok(new ItineraryRequestDTO(this.enteService.createItineraryRequest(ente, itineraryForm)));
+    }
+
+    @DeleteMapping("/itinerary/{id}")
+    public ResponseEntity<?> deleteItinerary(HttpServletRequest req, @PathVariable String id) {
+        EnteNode ente = this.middlewareToken.getUserFromToken(req);
+        Long itId = Long.parseLong(id);
+        try {
+            this.enteService.deleteItinerary(ente, itId);
+        } catch (Exception e) {
+            if (Objects.equals(e.getClass(), NullPointerException.class))
+                return ResponseEntity.notFound().build();
+            else
+                return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     //------------------------- POIs ------------------------------------------------
 
     @GetMapping("/pois")
-    public ResponseEntity<?> getPOIs(HttpServletRequest request){
+    public ResponseEntity<?> getPOIs(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        return ResponseEntity.ok(ente.getCity().getPOIs().stream().map(PoiDTO::new).toList());
+        return ResponseEntity.ok(ente.getCity().getPOIs().stream().map(this.poiService::createDTOfromNode).toList());
     }
 
     @PatchMapping("/pois")
-    public ResponseEntity<?> modifyPoi(@RequestBody PoiForm form,HttpServletRequest request){
-        log.info("form : {}",form);
+    public ResponseEntity<?> modifyPoi(@RequestBody PoiForm form, HttpServletRequest request) {
+        log.info("form : {}", form);
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         PoiNode poi;
-        try{
-            poi = this.enteService.modifyPoi(ente,form,form.getIdPoi());
-        } catch(Exception e){
-            log.error(e.getClass()+" "+e.getMessage());
+        try {
+            poi = this.enteService.modifyPoi(ente, form, form.getIdPoi());
+        } catch (Exception e) {
+            log.error(e.getClass() + " " + e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(new PoiDTO(poi));
     }
 
     @PostMapping("/pois")
-    public ResponseEntity<?> createPoi(@RequestBody PoiForm form,HttpServletRequest request){
+    public ResponseEntity<?> createPoi(@RequestBody PoiForm form, HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        PoiNode poi = this.enteService.createPoi(ente,form);
+        PoiNode poi = this.enteService.createPoi(ente, form);
         return ResponseEntity.ok(new PoiDTO(poi));
     }
+    @DeleteMapping("/pois/{id}")
+    public ResponseEntity<?> deletePoi(@PathVariable String id, HttpServletRequest request) {
+        EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        Long idPoi = Long.parseLong(id);
+        try {
+            this.enteService.deletePoi(ente, idPoi);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            if (Objects.equals(e.getClass(), NullPointerException.class))
+                return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     //------------------------- POIs REQUESTS ------------------------------------------------
-    //TODO: implement that
     @GetMapping("/poi-requests")
-    public ResponseEntity<?> getPoiRequests(HttpServletRequest request){
+    public ResponseEntity<?> getPoiRequests(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         return ResponseEntity.ok(ente.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList());
     }
 
     @PostMapping("/poi-requests")
-    public ResponseEntity<?> acceptPoiRequests(HttpServletRequest request,@RequestBody Map<String,?> body){
+    public ResponseEntity<?> acceptPoiRequests(HttpServletRequest request, @RequestBody Map<String, ?> body) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        boolean consensus = (boolean)body.get("consensus");
-        Long idRequest = Long.parseLong((String)body.get("idRequest"));
-        this.enteService.setConsensusToPoiRequest(ente,idRequest,consensus);
+        boolean consensus = (boolean) body.get("consensus");
+        Long idRequest = Long.parseLong((String) body.get("idRequest"));
+        this.enteService.setConsensusToPoiRequest(ente, idRequest, consensus);
         return ResponseEntity.ok().build();
     }
 
     //------------------------- THIRD  ------------------------------------------------
 
     @PostMapping("/third-registration")
-    public ResponseEntity<?> singUpThird(@RequestParam Boolean consensus,@RequestBody Map<String,Object> body,
-                                         HttpServletRequest request){
+    public ResponseEntity<?> singUpThird(@RequestParam Boolean consensus, @RequestBody Map<String, Object> body,
+                                         HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         ThirdPartyRegistrationRequest requestBody = this.thirdRequestRegistrationRepository
                 .findById(Long.parseLong((String) body.get("request"))).orElseThrow(NullPointerException::new);
-        log.info("ThirdPartyRegistration {}",requestBody);
-        this.enteService.setConsensusToRegistration(ente,requestBody,consensus);
-        log.info("POST method -> ThirdPartyRegistration {}",requestBody);
+        log.info("ThirdPartyRegistration {}", requestBody);
+        this.enteService.setConsensusToRegistration(ente, requestBody, consensus);
+        log.info("POST method -> ThirdPartyRegistration {}", requestBody);
         return ResponseEntity.ok().build();
     }
 }

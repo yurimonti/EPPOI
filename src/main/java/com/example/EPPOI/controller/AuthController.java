@@ -132,6 +132,11 @@ public class AuthController {
             TokenManager tokenManager = TokenManager.getInstance();
             JWTVerifier verifier = JWT.require(tokenManager.getRefreshAlgorithm()).build();
             DecodedJWT decodedJWT = verifier.verify(refresh_token);
+            if(decodedJWT.getExpiresAt().before(new Date())){
+                response.setContentType("application/json");
+                response.setHeader("error", "refresh token expired");
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+            }
             String username = decodedJWT.getSubject();
             UserNode user = this.userService.getUser(username);
             String access_token = JWT.create().withSubject(user.getUsername())

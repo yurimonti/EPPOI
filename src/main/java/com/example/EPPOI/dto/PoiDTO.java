@@ -19,6 +19,8 @@ public class PoiDTO {
     private Double timeToVisit;
     private AddressDTO address;
     private Double ticketPrice;
+
+    private CityDTO city;
     private List<String> contributors;
     private List<PoiTypeDTO> types;
     private ContactDTO contact;

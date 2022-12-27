@@ -1,9 +1,6 @@
 package com.example.EPPOI.service;
 
-import com.example.EPPOI.model.ItineraryNode;
-import com.example.EPPOI.model.ItineraryRelPoi;
-import com.example.EPPOI.model.ItineraryRequestNode;
-import com.example.EPPOI.model.ItineraryRequestRel;
+import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.repository.ItineraryRepository;
 import com.example.EPPOI.repository.ItineraryRequestRepository;
@@ -11,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,19 +19,59 @@ public class ItineraryServiceImpl implements ItineraryService{
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
 
+    private List<CategoryNode> distinctCategories(List<PoiNode> targets){
+        List<PoiTypeNode> types = new ArrayList<>();
+        List<CategoryNode> categories = new ArrayList<>();
+        targets.forEach(t-> types.addAll(t.getTypes()));
+        types.forEach(t -> categories.addAll(t.getCategories()));
+        return categories.stream().distinct().toList();
+    }
+
     @Override
     public void fillItinerary(ItineraryNode toFill, List<PoiNode> target) {
         for(int i = 1; i<=target.size();i++){
-            toFill.getPoints().add(new ItineraryRelPoi(target.get(i-1),i));
+            PoiNode toAdd = target.get(i-1);
+            toFill.getPoints().add(new ItineraryRelPoi(toAdd,i));
         }
+        toFill.setCategories(this.distinctCategories(target));
         this.itineraryRepository.save(toFill);
+    }
+
+    @Override
+    public ItineraryNode getItinerary(Long id) throws NullPointerException {
+        return this.itineraryRepository.findById(id)
+                .orElseThrow(()-> new NullPointerException("itinerary not found"));
+    }
+
+    @Override
+    public void deleteItinerary(List<ItineraryNode> toDelete) {
+        toDelete.forEach(this::deleteItinerary);
+    }
+
+    @Override
+    public void deleteItinerary(ItineraryNode toDelete) {
+        this.itineraryRepository.delete(toDelete);
+    }
+
+    @Override
+    public List<ItineraryNode> getItinerariesFromPoi(PoiNode poi) {
+        return this.itineraryRepository.findAll()
+                .stream()
+                .filter(i -> i.getPoints()
+                    .stream()
+                    .map(ItineraryRelPoi::getPoi)
+                    .map(PoiNode::getId)
+                    .anyMatch(p-> p.equals(poi.getId())))
+                .toList();
     }
 
     @Override
     public void fillItinerary(ItineraryRequestNode toFill, List<PoiNode> target) {
         for(int i = 1; i<=target.size();i++){
-            toFill.getPoints().add(new ItineraryRelPoi(target.get(i-1),i));
+            PoiNode toAdd = target.get(i-1);
+            toFill.getPoints().add(new ItineraryRelPoi(toAdd,i));
         }
+        toFill.setCategories(this.distinctCategories(target));
         this.itineraryRequestRepository.save(toFill);
     }
 

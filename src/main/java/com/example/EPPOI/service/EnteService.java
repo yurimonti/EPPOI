@@ -11,6 +11,7 @@ import com.example.EPPOI.utility.PoiForm;
 
 public interface EnteService extends AppUserService<EnteNode> {
     PoiNode createPoi(EnteNode ente,PoiForm form);
+    void deletePoi(EnteNode ente,Long toDelete);
     PoiNode modifyPoi(EnteNode ente,PoiForm form,Long toModify) throws IllegalArgumentException;
     ItineraryNode createItinerary(EnteNode ente, ItineraryForm itineraryForm);
     void setConsensusToItinerary(EnteNode ente,ItineraryRequestNode target,boolean consensus);
@@ -21,4 +22,5 @@ public interface EnteService extends AppUserService<EnteNode> {
 
     void setConsensusToPoiRequest(EnteNode ente,Long idRequest,Boolean consensus);
     ItineraryRequestNode createItineraryRequest(EnteNode ente, ItineraryForm itineraryForm);
+    void deleteItinerary(EnteNode ente,Long itineraryId)throws NullPointerException,IllegalArgumentException;
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,13 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
+    public List<CityNode> getCitiesByItinerary(ItineraryNode itinerary)throws NullPointerException {
+        if(Objects.isNull(itinerary)) throw new NullPointerException("Itinerary is null");
+        return this.cityRepository.getCityByItineraryId(itinerary.getId());
+        //itineraries.forEach();
+    }
+
+    @Override
     public CityNode getCityById(Long cityId) {
         return this.cityRepository.findById(cityId).orElseThrow(()-> new NullPointerException("No such city"));
     }
@@ -41,8 +49,10 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public CityNode getCityByPoi(Long poiId) {
-        return this.getAllCities().stream().filter(c -> c.getPOIs().stream().map(PoiNode::getId).toList().contains(poiId)).findFirst()
+        return this.cityRepository.getCityByPoiId(poiId)
                 .orElseThrow(()-> new NullPointerException("No such city contains this poi "+poiId));
+        /*return this.getAllCities().stream().filter(c -> c.getPOIs().stream().map(PoiNode::getId).toList().contains(poiId)).findFirst()
+                .orElseThrow(()-> new NullPointerException("No such city contains this poi "+poiId));*/
     }
 
     @Override

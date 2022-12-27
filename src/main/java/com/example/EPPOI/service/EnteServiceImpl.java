@@ -16,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +35,6 @@ public class EnteServiceImpl implements EnteService {
     private final ItineraryService itineraryService;
 
     //------------------------------------  POIs -----------------------------------------------------------------
-    //TODO: finire da implementare
     @Override
     public PoiNode createPoi(EnteNode ente, PoiForm form) {
         PoiNode result = this.poiService.createPoiFromParams(form);
@@ -45,8 +42,16 @@ public class EnteServiceImpl implements EnteService {
         CityNode city = ente.getCity();
         log.info("city {}",city.getName());
         this.poiService.setCityToPoi(result, city);
-        log.info("city saved {}",ente.getCity().getName());
+        log.info("city saved {}",city.getName());
         return result;
+    }
+
+    @Override
+    public void deletePoi(EnteNode ente, Long toDelete) {
+        PoiNode poi = this.poiService.findPoiById(toDelete);
+        if(ente.getCity().getPOIs().stream().map(PoiNode::getId).anyMatch(i -> i.equals(toDelete))){
+            this.poiService.deletePoi(poi);
+        }
     }
 
 
@@ -119,6 +124,14 @@ public class EnteServiceImpl implements EnteService {
         entes.forEach(e -> e.getItineraryRequests().add(new ItineraryRequestRel(result, false)));
         this.enteRepository.saveAll(entes);
         return result;
+    }
+
+    @Override
+    public void deleteItinerary(EnteNode ente,Long itineraryId) throws NullPointerException, IllegalArgumentException {
+        ItineraryNode itineraryNode = this.itineraryService.getItinerary(itineraryId);
+        if(ente.getCity().getItineraries().stream().map(ItineraryNode::getId).noneMatch(l -> l.equals(itineraryId)))
+            throw new IllegalArgumentException("This itinerary is not available for your city");
+        this.itineraryService.deleteItinerary(itineraryNode);
     }
 
     //consensus false and number of consensus  0 -> rejected, number consensus > 0 and consensus false -> pending, 0 and true -> accepted

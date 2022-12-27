@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CategoryDTO {
+    private Long id;
     private String name;
 
     public CategoryDTO(CategoryNode categoryNode) {
+        this.id = categoryNode.getId();
         this.name = categoryNode.getName();
     }
 }

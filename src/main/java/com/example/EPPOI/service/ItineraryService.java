@@ -12,6 +12,13 @@ import java.util.List;
 @Service
 public interface ItineraryService {
     void fillItinerary(ItineraryNode toFill, List<PoiNode> target);
+
+    ItineraryNode getItinerary(Long id) throws NullPointerException;
+
+    void deleteItinerary(List<ItineraryNode> toDelete);
+    void deleteItinerary(ItineraryNode toDelete);
+
+    List<ItineraryNode> getItinerariesFromPoi(PoiNode poi);
     void fillItinerary(ItineraryRequestNode toFill, List<PoiNode> target);
 
     void saveItinerary(ItineraryNode toSave);

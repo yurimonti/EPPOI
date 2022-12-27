@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public interface CityService {
     List<CityNode> getCitiesByPoi(List<PoiNode> pois);
+    List<CityNode> getCitiesByItinerary(ItineraryNode itinerary) throws NullPointerException;
 
     CityNode getCityById(Long cityId);
 

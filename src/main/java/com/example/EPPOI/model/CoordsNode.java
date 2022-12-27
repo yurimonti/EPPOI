@@ -15,15 +15,9 @@ public class CoordsNode {
     private Long id;
     private Double lat;
     private Double lon;
-    private Double alt;
 
     public CoordsNode(Double lat, Double lon) {
         this.lat = lat;
         this.lon = lon;
-    }
-
-    public CoordsNode(Double lat, Double lon,Double alt){
-        this(lat,lon);
-        this.alt=alt;
     }
 }

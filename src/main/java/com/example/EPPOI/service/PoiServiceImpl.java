@@ -5,6 +5,7 @@ import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.repository.*;
 import com.example.EPPOI.service.dtoManager.DtoEntityManager;
+import com.example.EPPOI.utility.AbstractFactoryPoi;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,17 +15,22 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PoiServiceImpl implements PoiService {
+    private final AbstractFactoryPoi abstractFactoryPoi;
     private final PoiRepository poiRepository;
     private final CityService cityService;
     private final ContactRepository contactRepository;
     private final AddressRepository addressRepository;
     private final CoordsRepository coordsRepository;
     private final TimeSlotRepository timeSlotRepository;
+
+    private final ItineraryService itineraryService;
+    private final CategoryRepository categoryRepository;
     private final PoiTypeRepository poiTypeRepository;
     private final TagRepository tagRepository;
     private final DtoEntityManager<PoiTagRel, PoiTagRelDTO> poiTagRelDTOManager;
@@ -39,10 +45,77 @@ public class PoiServiceImpl implements PoiService {
         return this.poiRepository.findById(id).orElseThrow(() -> new NullPointerException("PoiNode not found"));
     }
 
+    private void deleteTimeSlot(TimeSlotNode toDelete) {
+        this.timeSlotRepository.delete(toDelete);
+    }
+    private void deleteContact(ContactNode toDelete) {
+        this.contactRepository.delete(toDelete);
+    }
+    private void deleteAddress(AddressNode toDelete) {
+        this.addressRepository.delete(toDelete);
+    }
+    private void deleteCoordinate(CoordsNode toDelete) {
+        this.coordsRepository.delete(toDelete);
+    }
+
+    private void deletePoiPrivate(PoiNode toDelete)throws NullPointerException{
+        if(Objects.isNull(toDelete)) throw new NullPointerException("poi not available");
+        this.deleteTimeSlot(toDelete.getHours());
+        this.deleteAddress(toDelete.getAddress());
+        this.deleteCoordinate(toDelete.getCoordinate());
+        this.deleteContact(toDelete.getContact());
+        this.poiRepository.delete(toDelete);
+    }
+
+    @Override
+    public void deletePoi(PoiNode toDelete) throws NullPointerException,IllegalArgumentException{
+        if(Objects.isNull(toDelete)) throw new NullPointerException("poi not available");
+        List<ItineraryNode> itineraries = this.itineraryService.getItinerariesFromPoi(toDelete);
+        if(itineraries.stream().anyMatch(ItineraryNode::getIsDefault)) throw
+                new IllegalArgumentException("Impossible to delete cause there are some itineraries linked to this poi");
+        List<CityNode> citiesToSave = new ArrayList<>();
+        itineraries.forEach(i -> citiesToSave.addAll(this.cityService.getCitiesByItinerary(i)));
+        List<CityNode> distinctCities = citiesToSave.stream().distinct().toList();
+        this.itineraryService.deleteItinerary(itineraries);
+        this.deletePoiPrivate(toDelete);
+        this.cityService.saveCities(distinctCities);
+    }
+
     @Override
     public PoiNode createPoiFromParams(PoiForm form) {
-        PoiNode result = new PoiNode();
-        result.setName(form.getName());
+        List<PoiTypeNode> types = form.getTypes().stream().map(this.typeDtoManager::getEntityfromDto).toList();
+        log.info("types : {}",types);
+        List<CategoryNode> categories = new ArrayList<>();
+        types.forEach(t -> categories.addAll(t.getCategories()));
+        List<Long> categoriesId = categories.stream().map(CategoryNode::getId).distinct().toList();
+        log.info("categories : {}",categories.stream().distinct().toList());
+        List<PoiTagRel> tagValues = form.getTagValues().stream().map(this.poiTagRelDTOManager::getEntityfromDto).toList();
+        log.info("tag values : {}",tagValues);
+        CategoryNode ristorazione = this.categoryRepository.findByName("Ristorazione");
+        log.info("ristorazione : {}",ristorazione);
+        CategoryNode mobility = this.categoryRepository.findByName("Mobilità");
+        log.info("mobilità : {}",mobility);
+        if (!Objects.isNull(ristorazione) && categoriesId.contains(ristorazione.getId()))
+            return this.abstractFactoryPoi.createRestaurantPoi(form.getName(), form.getDescription(),
+                    this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
+                    this.timeDtoManager.getEntityfromDto(form.getTimeSlot()),
+                    form.getTimeToVisit(), this.addressDtoManager.getEntityfromDto(form.getAddress()),
+                    form.getTicketPrice(),types, this.contactDtoManager.getEntityfromDto(form.getContact()),
+                    tagValues);
+        if (!Objects.isNull(mobility) && categoriesId.contains(mobility.getId()))
+            return this.abstractFactoryPoi.createEvPoi(form.getName(), form.getDescription(),
+                    this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
+                    this.timeDtoManager.getEntityfromDto(form.getTimeSlot()),
+                    form.getTimeToVisit(), this.addressDtoManager.getEntityfromDto(form.getAddress()), form.getTicketPrice(),
+                    types, this.contactDtoManager.getEntityfromDto(form.getContact()),tagValues);
+        return this.abstractFactoryPoi.createBasePoi(form.getName(), form.getDescription(),
+                this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
+                this.timeDtoManager.getEntityfromDto(form.getTimeSlot()),
+                form.getTimeToVisit(), this.addressDtoManager.getEntityfromDto(form.getAddress()), form.getTicketPrice(),
+                types, this.contactDtoManager.getEntityfromDto(form.getContact()),tagValues);
+    }
+    //PoiNode result = new PoiNode();
+        /*result.setName(form.getName());
         result.setDescription(form.getDescription());
         result.setTimeToVisit(form.getTimeToVisit());
         result.setTicketPrice(form.getTicketPrice());
@@ -61,9 +134,8 @@ public class PoiServiceImpl implements PoiService {
         result.setHours(this.timeDtoManager.getEntityfromDto(form.getTimeSlot()));
         log.info("settaggio time {}", result.getHours());
         this.savePoi(result);
-        log.info("poi created : {}", result);
-        return result;
-    }
+        log.info("poi created : {}", result);*/
+//}
 
     private void emptyTimeSlot(TimeSlotNode toEmpty) {
         log.info("0");
@@ -147,7 +219,6 @@ public class PoiServiceImpl implements PoiService {
         log.info("timeToVisit :{}", target.getTimeToVisit());
         target.setTicketPrice(toSet.getTicketPrice());
         log.info("ticketPrice :{}", target.getTicketPrice());
-        //FIXME:ERROR HERE
         this.emptyTimeSlot(target.getHours());
         log.info("empty hours :{}", target.getHours());
         this.fillTimeSlot(target.getHours(), toSet);
@@ -198,6 +269,14 @@ public class PoiServiceImpl implements PoiService {
         city.getPOIs().add(poi);
         log.info("adding poi: {} to city: {}", poi.getName(), city.getName());
         this.cityService.saveCity(city);
+    }
+
+    @Override
+    public PoiDTO createDTOfromNode(PoiNode poi) {
+        CityNode city = this.cityService.getCityByPoi(poi.getId());
+        PoiDTO result = new PoiDTO(poi);
+        result.setCity(new CityDTO(city));
+        return result;
     }
 
     @Override
