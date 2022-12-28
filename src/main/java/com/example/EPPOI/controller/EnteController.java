@@ -1,5 +1,6 @@
 package com.example.EPPOI.controller;
 
+import com.example.EPPOI.dto.CityDTO;
 import com.example.EPPOI.dto.ItineraryDTO;
 import com.example.EPPOI.dto.ItineraryRequestDTO;
 import com.example.EPPOI.dto.PoiDTO;
@@ -60,9 +61,9 @@ public class EnteController {
     }
 
     @GetMapping("/city")
-    public ResponseEntity<CityNode> getCity(HttpServletRequest request) {
+    public ResponseEntity<?> getCity(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        return ResponseEntity.ok(ente.getCity());
+        return ResponseEntity.ok(new CityDTO(ente.getCity()));
     }
 
     //------------------------- ITINERARY Req------------------------------------------------

@@ -16,6 +16,8 @@ public class CityNode {
     @Id
     @GeneratedValue
     private Long id;
+
+    private Long identifier;
     private String name;
     @Relationship(type = "CITY_CONTAINS_POI",direction = Relationship.Direction.OUTGOING)
     private List<PoiNode> POIs;
@@ -28,7 +30,7 @@ public class CityNode {
         this.itineraries = new ArrayList<>();
     }
 
-    public CityNode(String name,CoordsNode  coords) {
+    public CityNode(String name,CoordsNode coords) {
         this();
         this.name = name;
         this.coords = coords;

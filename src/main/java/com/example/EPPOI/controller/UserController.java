@@ -52,7 +52,6 @@ public class UserController {
 
     @GetMapping("/pois/{id}")
     public ResponseEntity<PoiDTO> getPoi(@PathVariable String id){
-        log.info("start");
         PoiNode poi;
         try{
             poi = this.poiService.findPoiById(Long.parseLong(id));
