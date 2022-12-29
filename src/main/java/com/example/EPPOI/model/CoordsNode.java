@@ -1,5 +1,6 @@
 package com.example.EPPOI.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -9,6 +10,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 @Data
 @NoArgsConstructor
 @Node
+@AllArgsConstructor
 public class CoordsNode {
     @Id
     @GeneratedValue

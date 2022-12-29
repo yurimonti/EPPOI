@@ -1,6 +1,7 @@
 package com.example.EPPOI.controller;
 
 import com.example.EPPOI.dto.CategoryDTO;
+import com.example.EPPOI.dto.CityDTO;
 import com.example.EPPOI.dto.PoiDTO;
 import com.example.EPPOI.dto.PoiTypeDTO;
 import com.example.EPPOI.model.CategoryNode;
@@ -41,7 +42,7 @@ public class UserController {
     private final PoiTypeRepository poiTypeRepository;
     private final CategoryRepository categoryRepository;
 
-    private final CityRepository cityRepository;
+    private final CityService cityService;
 
     private final UserNodeRepository userNodeRepository;
 
@@ -49,6 +50,11 @@ public class UserController {
     public ResponseEntity<List<PoiDTO>> getPois(){
         return ResponseEntity.ok(this.poiService.getAllPois().stream().map(PoiDTO::new).toList());
     }*/
+
+    @GetMapping("/city")
+    public ResponseEntity<?> getCities(){
+        return ResponseEntity.ok(this.cityService.getAllCities().stream().map(CityDTO::new).toList());
+    }
 
     @GetMapping("/pois/{id}")
     public ResponseEntity<PoiDTO> getPoi(@PathVariable String id){

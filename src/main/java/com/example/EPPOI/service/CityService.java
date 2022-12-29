@@ -16,7 +16,7 @@ public interface CityService {
 
     List<CityNode> getAllCities();
 
-    CityNode getCityByPoi(Long poiId);
+    CityNode getCityByPoi(Long poiId) throws NullPointerException;
     void saveCity(CityNode toSave);
 
     void saveCities(List<CityNode> toSave);

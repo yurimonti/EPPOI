@@ -18,8 +18,8 @@ import java.time.LocalTime;
 import java.util.*;
 
 @SpringBootApplication
-/*@EnableScheduling
-@EnableAsync*/
+@EnableScheduling
+@EnableAsync
 public class EppoiApplication {
 
 	public static void main(String[] args) {

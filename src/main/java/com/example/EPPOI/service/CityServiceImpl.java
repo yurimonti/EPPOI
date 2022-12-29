@@ -33,7 +33,11 @@ public class CityServiceImpl implements CityService {
     @Override
     public List<CityNode> getCitiesByItinerary(ItineraryNode itinerary)throws NullPointerException {
         if(Objects.isNull(itinerary)) throw new NullPointerException("Itinerary is null");
-        return this.cityRepository.getCityByItineraryId(itinerary.getId());
+        List<CityNode> result = this.getAllCities().stream().filter(c -> c.getItineraries().stream().anyMatch(i->i.getId().equals(itinerary.getId()))).toList();
+        if(result.size() <=0 ) throw new NullPointerException("No such city contains this itinerary "+itinerary.getId());
+        return result;
+        /*if(Objects.isNull(itinerary)) throw new NullPointerException("Itinerary is null");
+        return this.cityRepository.getCityByItineraryId(itinerary.getId());*/
         //itineraries.forEach();
     }
 
@@ -48,8 +52,12 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public CityNode getCityByPoi(Long poiId) {
-        return this.cityRepository.getCityByPoiId(poiId)
+    public CityNode getCityByPoi(Long poiId) throws NullPointerException {
+        /*CityNode c =  this.cityRepository.getCityByPoiId(poiId)
+                .orElseThrow(()-> new NullPointerException("No such city contains this poi "+poiId));
+        log.info("city {}",c);
+        return c;*/
+        return this.getAllCities().stream().filter(c -> c.getPOIs().stream().anyMatch(p->p.getId().equals(poiId))).findFirst()
                 .orElseThrow(()-> new NullPointerException("No such city contains this poi "+poiId));
         /*return this.getAllCities().stream().filter(c -> c.getPOIs().stream().map(PoiNode::getId).toList().contains(poiId)).findFirst()
                 .orElseThrow(()-> new NullPointerException("No such city contains this poi "+poiId));*/
