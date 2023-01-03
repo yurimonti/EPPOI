@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface DtoEntityManager<T,E> {
-    T getEntityfromDto(E dto) throws NullPointerException;
+    default T getEntityfromDto(E dto) throws NullPointerException{
+        return null;
+    };
     E getDtofromEntity(T entity) throws NullPointerException;
 }

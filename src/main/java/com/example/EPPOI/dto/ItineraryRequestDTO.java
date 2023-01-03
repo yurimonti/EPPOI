@@ -18,6 +18,8 @@ public class ItineraryRequestDTO {
     private String description;
     private List<ItRelPoiDTO> points;
     private List<CategoryDTO> categories;
+
+    private List<CityDTO> cities;
     private Boolean accepted;
     private Integer consensus;
     private String createdBy;

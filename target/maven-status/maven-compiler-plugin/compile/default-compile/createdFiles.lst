@@ -1,8 +1,10 @@
 com\example\EPPOI\repository\EnteRepository.class
+com\example\EPPOI\service\dtoManager\ItRequestDtoManager.class
 com\example\EPPOI\controller\TouristController.class
 com\example\EPPOI\dto\ContactDTO.class
 com\example\EPPOI\model\poi\ThirdPoiNode.class
 com\example\EPPOI\service\CityServiceImpl.class
+com\example\EPPOI\service\dtoManager\ItineraryDtoManager.class
 com\example\EPPOI\controller\AuthController$UserBody.class
 com\example\EPPOI\dto\PoiTagRelDTO.class
 com\example\EPPOI\model\ItineraryRelPoi.class
@@ -76,6 +78,7 @@ com\example\EPPOI\service\GeneralUserServiceImpl.class
 com\example\EPPOI\utility\PoiForm.class
 com\example\EPPOI\service\PoiRequestService.class
 com\example\EPPOI\repository\TouristRepository.class
+com\example\EPPOI\service\dtoManager\ItineraryRequestDtoManager.class
 com\example\EPPOI\service\ItineraryService.class
 com\example\EPPOI\service\ItineraryServiceImpl.class
 com\example\EPPOI\utility\ScheduledTasks.class

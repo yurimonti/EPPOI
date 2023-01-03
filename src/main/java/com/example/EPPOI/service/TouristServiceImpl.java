@@ -52,7 +52,7 @@ public class TouristServiceImpl implements TouristService {
     @Override
     public ItineraryNode createItinerary(TouristNode creator, ItineraryForm form) {
         List<PoiNode> POIsToAdd = new ArrayList<>();
-        form.getPOIsId().forEach(i -> POIsToAdd.add(this.poiService.findPoiById(i)));
+        form.getPoisId().forEach(i -> POIsToAdd.add(this.poiService.findPoiById(i)));
         ItineraryNode result = this.itineraryService.createBaseItinerary(form.getName(),
                 form.getDescription(),POIsToAdd,form.getGeoJsonList(),false);
         List<CityNode> cities = new ArrayList<>();

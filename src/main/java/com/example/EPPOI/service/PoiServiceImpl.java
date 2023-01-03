@@ -114,28 +114,6 @@ public class PoiServiceImpl implements PoiService {
                 form.getTimeToVisit(), this.addressDtoManager.getEntityfromDto(form.getAddress()), form.getTicketPrice(),
                 types, this.contactDtoManager.getEntityfromDto(form.getContact()),tagValues);
     }
-    //PoiNode result = new PoiNode();
-        /*result.setName(form.getName());
-        result.setDescription(form.getDescription());
-        result.setTimeToVisit(form.getTimeToVisit());
-        result.setTicketPrice(form.getTicketPrice());
-        log.info("settaggio base {} {} {} {}", result.getName(), result.getDescription(), result.getTimeToVisit()
-                , result.getTicketPrice());
-        result.setCoordinate(this.coordsDtoManager.getEntityfromDto(form.getCoordinate()));
-        log.info("settaggio coords {}", result.getCoordinate());
-        form.getTagValues().forEach(t -> result.getTagValues().add(this.poiTagRelDTOManager.getEntityfromDto(t)));
-        log.info("settaggio tagValues {}", result.getTagValues());
-        form.getTypes().forEach(t -> result.getTypes().add(this.typeDtoManager.getEntityfromDto(t)));
-        log.info("settaggio types {}", result.getTypes());
-        result.setAddress(this.addressDtoManager.getEntityfromDto(form.getAddress()));
-        log.info("settaggio address {}", result.getAddress());
-        result.setContact(this.contactDtoManager.getEntityfromDto(form.getContact()));
-        log.info("settaggio contact {}", result.getContact());
-        result.setHours(this.timeDtoManager.getEntityfromDto(form.getTimeSlot()));
-        log.info("settaggio time {}", result.getHours());
-        this.savePoi(result);
-        log.info("poi created : {}", result);*/
-//}
 
     private void emptyTimeSlot(TimeSlotNode toEmpty) {
         log.info("0");

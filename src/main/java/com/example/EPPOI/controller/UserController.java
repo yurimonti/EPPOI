@@ -1,20 +1,11 @@
 package com.example.EPPOI.controller;
 
-import com.example.EPPOI.dto.CategoryDTO;
-import com.example.EPPOI.dto.CityDTO;
-import com.example.EPPOI.dto.PoiDTO;
-import com.example.EPPOI.dto.PoiTypeDTO;
-import com.example.EPPOI.model.CategoryNode;
-import com.example.EPPOI.model.ItineraryNode;
-import com.example.EPPOI.model.PoiTypeNode;
+import com.example.EPPOI.dto.*;
+import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
-import com.example.EPPOI.model.RequestPoiNode;
 import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.model.user.UserNode;
-import com.example.EPPOI.repository.CategoryRepository;
-import com.example.EPPOI.repository.CityRepository;
-import com.example.EPPOI.repository.PoiTypeRepository;
-import com.example.EPPOI.repository.UserNodeRepository;
+import com.example.EPPOI.repository.*;
 import com.example.EPPOI.service.*;
 import com.example.EPPOI.service.dtoManager.DtoEntityManager;
 import com.example.EPPOI.utility.PoiParamsProvider;
@@ -27,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -45,6 +37,14 @@ public class UserController {
     private final CityService cityService;
 
     private final UserNodeRepository userNodeRepository;
+
+    private final ItineraryService itineraryService;
+
+    private final DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager;
+    private final DtoEntityManager<ItineraryRequestNode, ItineraryRequestDTO> itineraryRequestDTOManager;
+
+    private final ItineraryRequestRepository itineraryRequestRepository;
+
 
     /*@GetMapping("/pois")
     public ResponseEntity<List<PoiDTO>> getPois(){
@@ -65,6 +65,25 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponseEntity.ok(this.poiService.createDTOfromNode(poi));
+    }
+
+    @GetMapping("/itinerary/{id}")
+    public ResponseEntity<ItineraryDTO> getItinerary(@PathVariable String id){
+        ItineraryNode result;
+        try{
+            result  = this.itineraryService.getItinerary(Long.parseLong(id));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(this.itineraryDTOManager.getDtofromEntity(result));
+    }
+
+    @GetMapping("/itinerary-request/{id}")
+    public ResponseEntity<ItineraryRequestDTO> getItineraryRequest(@PathVariable String id){
+        return this.itineraryRequestRepository.findById(Long.parseLong(id))
+                .map(itineraryRequestNode ->
+                        ResponseEntity.ok(this.itineraryRequestDTOManager.getDtofromEntity(itineraryRequestNode)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
     }
 
     @GetMapping("/categories")

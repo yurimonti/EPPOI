@@ -25,6 +25,7 @@ C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\mode
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\ItineraryRequestNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\security\CustomAuthenticationFilter.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\RequestPoiRepository.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\dtoManager\ItRequestDtoManager.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\SerializerObject.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\EvSharingRepository.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\DefaultService.java
@@ -42,6 +43,7 @@ C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repo
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\PoiParamsProvider.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\PoiRequestDTO.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\TouristRepository.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\dtoManager\ItineraryDtoManager.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\EnteNode.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\PoiForm.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\poi\RestaurantPoiNode.java
@@ -100,6 +102,7 @@ C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\serv
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\utility\AddressSerializer.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\TouristService.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\PoiTypeNode.java
+C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\service\dtoManager\ItineraryRequestDtoManager.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\repository\UserRoleRepository.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\dto\ContactDTO.java
 C:\Users\Yuri Monti\GitHub Repository\EPPOI\src\main\java\com\example\EPPOI\model\user\TouristNode.java

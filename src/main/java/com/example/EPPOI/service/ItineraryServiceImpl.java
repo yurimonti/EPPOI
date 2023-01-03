@@ -1,5 +1,7 @@
 package com.example.EPPOI.service;
 
+import com.example.EPPOI.dto.ItRelPoiDTO;
+import com.example.EPPOI.dto.ItineraryRequestDTO;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.repository.ItineraryRepository;
@@ -101,9 +103,10 @@ public class ItineraryServiceImpl implements ItineraryService{
     public ItineraryNode createItineraryFromRequest(ItineraryRequestNode request) {
         ItineraryNode result = new ItineraryNode(request.getName(),request.getDescription());
         result.setIsDefault(true);
+        result.setGeoJsonList(request.getGeoJsonList());
         request.getPoints().forEach(p -> result.getPoints().add(new ItineraryRelPoi(p.getPoi(),p.getIndex())));
+        result.setCategories(request.getCategories());
         result.setTimeToVisit(request.getTimeToVisit());
-        this.saveItinerary(result);
         return result;
     }
 }

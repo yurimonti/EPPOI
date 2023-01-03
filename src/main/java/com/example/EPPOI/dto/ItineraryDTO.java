@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,6 +17,7 @@ public class ItineraryDTO {
     private String description;
     private String createdBy;
     private Boolean isDefault;
+    private List<CityDTO> cities;
     private List<ItRelPoiDTO> points;
     private List<CategoryDTO> categories;
     private Double timeToVisit;
@@ -32,5 +34,6 @@ public class ItineraryDTO {
         this.timeToVisit = from.getTimeToVisit();
         this.categories = from.getCategories().stream().map(CategoryDTO::new).toList();
         this.geoJsonList = from.getGeoJsonList();
+        this.cities = new ArrayList<>();
     }
 }

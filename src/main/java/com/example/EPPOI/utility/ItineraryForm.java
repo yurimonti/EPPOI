@@ -12,6 +12,6 @@ import java.util.List;
 public class ItineraryForm {
     private String name;
     private String description;
-    private List<Long> POIsId;
+    private List<Long> poisId;
     private List<String> geoJsonList;
 }
