@@ -13,7 +13,7 @@ import java.util.List;
 public class CityDTO {
     private Long id;
 
-    private Long identifier;
+    private List<Long> identifiers;
     private String name;
 
     private CoordsDTO coordinates;
@@ -23,7 +23,7 @@ public class CityDTO {
 
     public CityDTO(CityNode cityNode) {
         this.id = cityNode.getId();
-        this.identifier = cityNode.getIdentifier();
+        this.identifiers = cityNode.getIdentifiers();
         this.name = cityNode.getName();
         this.pois = cityNode.getPOIs().stream().map(PoiDTO::new).toList();
         this.itineraries = cityNode.getItineraries().stream().map(ItineraryDTO::new).toList();

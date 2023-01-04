@@ -10,6 +10,7 @@ public interface PoiRequestService {
 
     RequestPoiNode getRequestById(Long idRequest) throws NullPointerException;
     void saveRequest(RequestPoiNode toSave);
+    void deleteRequest(RequestPoiNode toDelete);
     RequestPoiNode createPoiRequestFromParams(PoiForm form);
     PoiRequestDTO getDTOfromRequest(RequestPoiNode from);
     RequestPoiNode getRequestfromDTO(PoiRequestDTO from);

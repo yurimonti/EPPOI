@@ -20,7 +20,7 @@ public class CityNode {
     @GeneratedValue
     private Long id;
 
-    private Long identifier;
+    private List<Long> identifiers;
     private String name;
     @Relationship(type = "CITY_CONTAINS_POI",direction = Relationship.Direction.OUTGOING)
     private List<PoiNode> POIs;

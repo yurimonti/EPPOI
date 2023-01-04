@@ -42,6 +42,11 @@ public class PoiRequestServiceImpl implements PoiRequestService {
     }
 
     @Override
+    public void deleteRequest(RequestPoiNode toDelete) {
+        this.requestPoiRepository.delete(toDelete);
+    }
+
+    @Override
     public RequestPoiNode createPoiRequestFromParams(PoiForm form) {
         RequestPoiNode result = new RequestPoiNode();
         result.setName(form.getName());
@@ -84,11 +89,12 @@ public class PoiRequestServiceImpl implements PoiRequestService {
                 .getUsername();*/
         //String username = from.getMadeBy().getUsername();
         String username = from.getCreatedBy();
+        log.info("from poiRequest is {}",from);
         CityDTO cityDto = null;
         PoiDTO target = null;
         if (!Objects.isNull(from.getTarget())) {
             cityDto = new CityDTO(this.cityService.getCityByPoi(from.getTarget().getId()));
-            target = new PoiDTO(from.getTarget());
+            target = new PoiDTO(from.getTarget());;
         }
         List<PoiTagRelDTO> tagRelDTOs = from.getTagValues().stream().map(PoiTagRelDTO::new).toList();
         List<PoiTypeDTO> poiTypeDTOs = from.getTypes().stream().map(PoiTypeDTO::new).toList();

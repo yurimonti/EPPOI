@@ -1,5 +1,6 @@
 package com.example.EPPOI.service;
 
+import com.example.EPPOI.dto.PoiRequestDTO;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
@@ -78,12 +79,18 @@ public class TouristServiceImpl implements TouristService {
         this.touristRepository.save(creator);
         log.info("saving creator {}",creator.getPoiRequests().size());
         List<EnteNode> entes;
-        if (Objects.isNull(params.getIdPoi()))
+        log.info("target id {}",params.getIdPoi());
+        if (Objects.isNull(params.getIdPoi())) {
             entes = this.isNewFilter(true, cityId);
+            log.info("is new");
+        }
         else {
-            result.setTarget(this.poiService.findPoiById(params.getIdPoi()));
+            PoiNode poi = this.poiService.findPoiById(params.getIdPoi());
+            result.setTarget(poi);
+            log.info("poi is {}", poi);
             this.poiRequestService.saveRequest(result);
             entes = this.isNewFilter(false, params.getIdPoi());
+            log.info("is modify");
         }
         entes.forEach(e -> {
             e.getPoiRequests().add(result);
@@ -110,6 +117,22 @@ public class TouristServiceImpl implements TouristService {
         this.touristRepository.save(creator);*/
         log.info("result : {}", result);
         return result;
+    }
+
+    @Override
+    public List<PoiRequestDTO> getAllRequestDTOs(TouristNode tourist) {
+        return tourist.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList();
+    }
+
+    @Override
+    public void deletePoiRequest(TouristNode tourist, Long idRequest) throws NullPointerException {
+        if(tourist.getPoiRequests().stream()
+                .filter(p-> Objects.isNull(p.getIsAccepted()))
+                .noneMatch(p -> p.getId().equals(idRequest)))
+            throw new NullPointerException();
+        RequestPoiNode toDelete = this.poiRequestService.getRequestById(idRequest);
+        this.poiRequestService.deleteRequest(toDelete);
+
     }
 
 

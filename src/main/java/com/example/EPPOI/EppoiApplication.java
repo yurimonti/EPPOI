@@ -221,7 +221,7 @@ public class EppoiApplication {
 			);
 
 			CityNode camerino = new CityNode("Camerino",camerinoCoords);
-			camerino.setIdentifier(101847679L);
+			camerino.setIdentifiers(Arrays.asList(101847679L,404458603L));
 			cityRepository.save(camerino);
 			this.createPoiProva(coordsRepository, poiRepository, "Monastero di S. Chiara",
 					camerino, monastero, new CoordsNode(43.1392,13.0732),orari,timeSlotRepository,contactRepository,
@@ -354,7 +354,7 @@ public class EppoiApplication {
 					giardino, new CoordsNode(43.1358,13.0698), orari, timeSlotRepository, contactRepository, addressRepository,cityRepository);
 			//pointProvaCoords = new Coordinate(43.2104315,13.0526301);
 			CityNode castel = new CityNode("Castel Raimondo",castelCoords);
-			castel.setIdentifier(101798603L);
+			castel.setIdentifiers(Arrays.asList(101798603L,404458609L));
 			cityRepository.save(castel);
 			this.createPoiProva(coordsRepository, poiRepository, "PalaSport Castel Raimondo",castel,palazzo,
 					new CoordsNode(43.2104315,13.0526301), orari, timeSlotRepository, contactRepository,
@@ -367,7 +367,7 @@ public class EppoiApplication {
 			userRoleRepository.save(touristRole);
 			userRoleRepository.save(adminRole);
 			userRoleRepository.save(thirdRole);
-			UserNode enteCamerino = new EnteNode("enteCamerino","ente_camerino",
+			*//*UserNode enteCamerino = new EnteNode("enteCamerino","ente_camerino",
 					"ente.camerino@gmail.com","password","ente_camerino",camerino,enteRole);
 			UserNode tourist = new TouristNode("name","surname",
 					"name.surname@gmail.com","password","an_user",touristRole);
@@ -382,7 +382,7 @@ public class EppoiApplication {
 			it1.getPoints().add(rel3);
 			itineraryRepository.save(it1);
 			camerino.getItineraries().add(it1);
-			cityRepository.save(camerino);
+			cityRepository.save(camerino);*//*
 		};
 	}*/
 }

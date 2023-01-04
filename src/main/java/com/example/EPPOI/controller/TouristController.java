@@ -46,12 +46,34 @@ public class TouristController {
     //------------------------------ Pois -----------------------------
 
     //-----------------------Poi Request -----------------------------------------------------
+
+    @GetMapping("/poi-requests")
+    public ResponseEntity<?> getRequests(HttpServletRequest request){
+        TouristNode tourist = this.middlewareToken.getUserFromToken(request);
+        return ResponseEntity.ok(this.touristService.getAllRequestDTOs(tourist));
+    }
+
     @PostMapping("/poi-requests")
     public ResponseEntity<?> createPoiRequest(HttpServletRequest request, @RequestBody PoiForm form, @RequestParam Long cityId) {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
         RequestPoiNode result;
         result = this.touristService.createRequestPoi(tourist, form, cityId);
         return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/poi-requests/{id}")
+    public ResponseEntity<?> deletePoiRequest(HttpServletRequest request,@PathVariable String id){
+        TouristNode tourist = this.middlewareToken.getUserFromToken(request);
+        Long idRequest = Long.parseLong(id);
+        try{
+            this.touristService.deletePoiRequest(tourist,idRequest);
+            return ResponseEntity.ok().build();
+        }
+        catch(Exception e){
+            if (Objects.equals(e.getClass(), NullPointerException.class))
+                return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     //-------------------------- ITINERARIES ------------------------
