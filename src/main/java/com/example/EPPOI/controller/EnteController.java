@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Controller
 @RequestMapping("/ente")
@@ -101,16 +103,13 @@ public class EnteController {
     //------------------------- ITINERARY ------------------------------------------------
 
     @GetMapping("/itinerary")
-    public ResponseEntity<?> getItineraries(HttpServletRequest request,@RequestParam boolean details) {
+    public ResponseEntity<?> getItineraries(HttpServletRequest request, @RequestParam boolean details) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        return details ? ResponseEntity.ok(ente.getCity().getItineraries()
+        Stream<ItineraryNode> stream = ente.getCity().getItineraries()
                 .stream()
-                .map(this.itineraryDTOManager::getDtofromEntity)
-                .toList()) :
-                ResponseEntity.ok(ente.getCity().getItineraries()
-                        .stream()
-                        .map(ItineraryDTO::new)
-                        .toList());
+                .filter(ItineraryNode::getIsDefault);
+        return details ? ResponseEntity.ok(stream.map(this.itineraryDTOManager::getDtofromEntity).toList())
+                : ResponseEntity.ok(stream.map(ItineraryDTO::new).toList());
     }
 
     //FIXME:rivedere metodo

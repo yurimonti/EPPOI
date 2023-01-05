@@ -32,11 +32,8 @@ public class ItineraryDtoManager implements DtoEntityManager<ItineraryNode, Itin
                 entity.getTimeToVisit(), entity.getGeoJsonList());
         return result;*/
         ItineraryDTO result = new ItineraryDTO(entity);
-        log.info("pre cities {}",result.getCities());
         List<CityNode> cities = this.cityService.getCitiesByItinerary(entity);
-        log.info("post cities {}",cities);
         result.setCities(cities.stream().map(CityDTO::new).toList());
-        log.info("post set cities {}",result.getCities());
         return result;
     }
 }

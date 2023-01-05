@@ -2,12 +2,15 @@ package com.example.EPPOI.controller;
 
 import com.example.EPPOI.dto.ItineraryDTO;
 import com.example.EPPOI.dto.PoiDTO;
+import com.example.EPPOI.model.CityNode;
 import com.example.EPPOI.model.ItineraryNode;
 import com.example.EPPOI.model.RequestPoiNode;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.TouristNode;
+import com.example.EPPOI.service.CityService;
 import com.example.EPPOI.service.PoiService;
 import com.example.EPPOI.service.TouristService;
+import com.example.EPPOI.service.dtoManager.DtoEntityManager;
 import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.MiddlewareToken;
 import com.example.EPPOI.utility.PoiForm;
@@ -18,7 +21,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -29,11 +34,18 @@ public class TouristController {
     private final TouristService touristService;
     private final PoiService poiService;
 
+    private final CityService cityService;
+    private final DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager;
+
+
     private final MiddlewareToken<TouristNode> middlewareToken;
 
-    public TouristController(TouristService touristService,PoiService poiService) {
+    public TouristController(TouristService touristService,PoiService poiService,CityService cityService,
+                             DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager) {
         this.touristService = touristService;
         this.poiService = poiService;
+        this.cityService = cityService;
+        this.itineraryDTOManager= itineraryDTOManager;
         this.middlewareToken = new MiddlewareToken<>(touristService.getRepository());
     }
 
@@ -81,7 +93,33 @@ public class TouristController {
     @GetMapping("/itinerary")
     public ResponseEntity<List<ItineraryDTO>> getItineraries(HttpServletRequest request) {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
-        return ResponseEntity.ok(tourist.getItineraries().stream().map(ItineraryDTO::new).toList());
+        return ResponseEntity.ok(tourist.getItineraries().stream().map(this.itineraryDTOManager::getDtofromEntity).toList());
+    }
+
+    @DeleteMapping("/itinerary/{id}")
+    public ResponseEntity<?> deleteItinerary(HttpServletRequest request,@PathVariable String id) {
+        TouristNode tourist = this.middlewareToken.getUserFromToken(request);
+        try{
+            this.touristService.deleteItinerary(tourist,Long.parseLong(id));
+            return ResponseEntity.ok().build();
+        }catch(Exception e){
+            if (Objects.equals(e.getClass(), NullPointerException.class))
+                return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/city/{id}/itineraries")
+    public ResponseEntity<List<ItineraryDTO>> getItineraries(HttpServletRequest request,@PathVariable String id) {
+        TouristNode tourist = this.middlewareToken.getUserFromToken(request);
+        Long cityId = Long.parseLong(id);
+        try {
+            CityNode cityNode = this.cityService.getCityById(cityId);
+            return ResponseEntity.ok(cityNode.getItineraries().stream().filter(ItineraryNode::getIsDefault).map(ItineraryDTO::new).toList());
+        }
+        catch(Exception e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/itinerary")
@@ -90,6 +128,21 @@ public class TouristController {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
         ItineraryNode itinerary = this.touristService.createItinerary(tourist, itineraryForm);
         return ResponseEntity.ok(new ItineraryDTO(itinerary));
+    }
+
+    @PostMapping("/itinerary/{id}")
+    public ResponseEntity<?> proposeItinerary(HttpServletRequest request,@PathVariable String id){
+        TouristNode tourist = this.middlewareToken.getUserFromToken(request);
+        try {
+            return ResponseEntity.ok(this.touristService.proposeItinerary(tourist,Long.parseLong(id)));
+        }catch (Exception e){
+            if (Objects.equals(e.getClass(), NullPointerException.class)) {
+                Map<String,String> response = new HashMap<>();
+                response.put("error",e.getMessage());
+                return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

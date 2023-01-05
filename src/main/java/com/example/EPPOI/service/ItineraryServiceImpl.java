@@ -4,6 +4,8 @@ import com.example.EPPOI.dto.ItRelPoiDTO;
 import com.example.EPPOI.dto.ItineraryRequestDTO;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
+import com.example.EPPOI.model.user.EnteNode;
+import com.example.EPPOI.repository.CategoryRepository;
 import com.example.EPPOI.repository.ItineraryRepository;
 import com.example.EPPOI.repository.ItineraryRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +24,17 @@ public class ItineraryServiceImpl implements ItineraryService{
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
 
+    private final CategoryRepository categoryRepository;
+
+    private final CityService cityService;
+
     private List<CategoryNode> distinctCategories(List<PoiNode> targets){
         List<PoiTypeNode> types = new ArrayList<>();
         List<CategoryNode> categories = new ArrayList<>();
         targets.forEach(t-> types.addAll(t.getTypes()));
         types.forEach(t -> categories.addAll(t.getCategories()));
-        return categories.stream().distinct().toList();
+        return categories.stream().map(CategoryNode::getId).distinct().map(this.categoryRepository::findById)
+                .map(Optional::get).toList();
     }
 
     @Override

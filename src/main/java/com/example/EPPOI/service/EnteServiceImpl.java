@@ -142,7 +142,10 @@ public class EnteServiceImpl implements EnteService {
     @Override
     public void deleteItinerary(EnteNode ente, Long itineraryId) throws NullPointerException, IllegalArgumentException {
         ItineraryNode itineraryNode = this.itineraryService.getItinerary(itineraryId);
-        if (ente.getCity().getItineraries().stream().map(ItineraryNode::getId).noneMatch(l -> l.equals(itineraryId)))
+        if (ente.getCity().getItineraries().stream()
+                .filter(ItineraryNode::getIsDefault)
+                .map(ItineraryNode::getId)
+                .noneMatch(l -> l.equals(itineraryId)))
             throw new IllegalArgumentException("This itinerary is not available for your city");
         this.itineraryService.deleteItinerary(itineraryNode);
     }

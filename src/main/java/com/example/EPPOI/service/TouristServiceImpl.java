@@ -119,6 +119,55 @@ public class TouristServiceImpl implements TouristService {
         return result;
     }
 
+    private ItineraryRequestNode createRequestFromItinerary(ItineraryNode itinerary) {
+        log.info("richiesta 0 {}",itinerary.getPoints().size());
+        ItineraryRequestNode result = new ItineraryRequestNode(itinerary.getName(), itinerary.getDescription());
+        log.info("richiesta 1 {}",result.getName());
+        itinerary.getPoints().forEach(p -> result.getPoints().add(new ItineraryRelPoi(p.getPoi(),p.getIndex())));
+        log.info("richiesta 2 {}",result.getPoints().size());
+        List<EnteNode> entes = new ArrayList<>();
+        result.setGeoJsonList(itinerary.getGeoJsonList());
+        log.info("richiesta 3 {}",result.getGeoJsonList().size());
+        result.setTimeToVisit(itinerary.getTimeToVisit());
+        log.info("richiesta 4 {}",result.getTimeToVisit());
+        List<CityNode> cities = this.cityService.getCitiesByItinerary(itinerary);
+        log.info("richiesta 5 {}",cities.size());
+        cities.forEach(c -> entes.addAll(
+                this.enteRepository.findAll().stream()
+                        .filter(e -> e.getCity().getId().equals(c.getId())).toList()));
+        log.info("richiesta 6 {}",entes.size());
+        result.setConsensus(entes.size());
+        result.setCategories(itinerary.getCategories());
+        log.info("richiesta 7 {}",result.getCategories().size());
+        this.itineraryService.saveItinerary(result);
+        entes.forEach(e -> e.getItineraryRequests().add(new ItineraryRequestRel(result, false)));
+        log.info("richiesta 8 {}",entes.size());
+        this.enteRepository.saveAll(entes);
+        return result;
+    }
+
+    @Override
+    public ItineraryRequestNode proposeItinerary(TouristNode tourist, Long itineraryId) throws NullPointerException{
+        log.info("start");
+        ItineraryNode toPropose = this.itineraryService.getItinerary(itineraryId);
+        log.info("itinerary by id {}",toPropose.getName());
+        if(tourist.getItineraries().stream().noneMatch(i -> i.getId().equals(itineraryId)))
+            throw new NullPointerException("Itinerary not present");
+        ItineraryRequestNode result = this.createRequestFromItinerary(toPropose);
+        result.setCreatedBy(tourist.getUsername());
+        this.itineraryService.saveItinerary(result);
+        log.info("ritorno -> {}",result.getPoints());
+        return result;
+    }
+
+    @Override
+    public void deleteItinerary(TouristNode tourist, Long itineraryId) {
+        ItineraryNode itineraryNode = this.itineraryService.getItinerary(itineraryId);
+        if (tourist.getItineraries().stream().map(ItineraryNode::getId).noneMatch(l -> l.equals(itineraryId)))
+            throw new IllegalArgumentException("This itinerary is not available for your city");
+        this.itineraryService.deleteItinerary(itineraryNode);
+    }
+
     @Override
     public List<PoiRequestDTO> getAllRequestDTOs(TouristNode tourist) {
         return tourist.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList();
