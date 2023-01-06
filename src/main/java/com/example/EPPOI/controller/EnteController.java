@@ -20,10 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Controller
@@ -40,7 +37,7 @@ public class EnteController {
     private final PoiRequestService poiRequestService;
     private final DtoEntityManager<ItineraryRequestNode, ItineraryRequestDTO> itineraryRequestDTOManager;
     private final DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager;
-    private EnteService enteService;
+    private final EnteService enteService;
 
     public EnteController(EnteService enteService, ThirdRequestRegistrationRepository thirdRequestRegistrationRepository,
                           ItineraryRequestRepository itineraryRequestRepository, PoiRequestService poiRequestService,
@@ -195,6 +192,28 @@ public class EnteController {
         return ResponseEntity.ok(ente.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList());
     }
 
+    @GetMapping("/poi-requests/{id}")
+    public ResponseEntity<?> getPoiRequests(HttpServletRequest request,@PathVariable String id) {
+        EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        Long idRequest = Long.parseLong(id);
+        Map<String, String> errors = new HashMap<>();
+        try {
+            this.poiRequestService.getRequestById(idRequest);
+            if(ente.getPoiRequests().stream().noneMatch(r -> r.getId().equals(idRequest))){
+                errors.put("error","Non puoi gestire questa richiesta");
+                return new ResponseEntity<>(errors,HttpStatus.FORBIDDEN);
+            }
+            return ResponseEntity.ok(
+                    this.poiRequestService.getDTOfromRequest(this.poiRequestService.getRequestById(idRequest)));
+        }catch(Exception e){
+            if (Objects.equals(e.getClass(), NullPointerException.class)) {
+                errors.put("error",e.getMessage());
+                return new ResponseEntity<>(errors,HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PostMapping("/poi-requests")
     public ResponseEntity<?> acceptPoiRequests(HttpServletRequest request, @RequestBody Map<String, ?> body) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
@@ -202,6 +221,24 @@ public class EnteController {
         Long idRequest = Long.parseLong((String) body.get("idRequest"));
         this.enteService.setConsensusToPoiRequest(ente, idRequest, consensus);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/poi-requests/{id}")
+    public ResponseEntity<?> acceptPoiRequests(HttpServletRequest request,@PathVariable String id,
+                                               @RequestBody PoiForm form) {
+        EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        Long idRequest = Long.parseLong(id);
+        try{
+            this.enteService.modifyPoiRequest(ente, idRequest, form);
+            return ResponseEntity.ok().build();
+        }catch(Exception e){
+            if (Objects.equals(e.getClass(), NullPointerException.class)) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put("error",e.getMessage());
+                return new ResponseEntity<>(errors,HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     //------------------------- THIRD  ------------------------------------------------

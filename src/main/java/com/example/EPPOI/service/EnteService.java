@@ -13,6 +13,7 @@ public interface EnteService extends AppUserService<EnteNode> {
     PoiNode createPoi(EnteNode ente,PoiForm form);
     void deletePoi(EnteNode ente,Long toDelete);
     PoiNode modifyPoi(EnteNode ente,PoiForm form,Long toModify) throws IllegalArgumentException;
+    void modifyPoiRequest(EnteNode ente, Long idRequest, PoiForm form) throws NullPointerException;
     ItineraryNode createItinerary(EnteNode ente, ItineraryForm itineraryForm);
     void setConsensusToItinerary(EnteNode ente,ItineraryRequestNode target,boolean consensus);
     void setConsensusToRegistration(EnteNode ente,ThirdPartyRegistrationRequest target,boolean consensus);

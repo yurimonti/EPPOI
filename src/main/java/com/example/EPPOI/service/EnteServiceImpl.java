@@ -1,14 +1,11 @@
 package com.example.EPPOI.service;
 
-import com.example.EPPOI.dto.CoordsDTO;
-import com.example.EPPOI.dto.PoiTagRelDTO;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.model.user.ThirdUserNode;
 import com.example.EPPOI.model.user.UserRoleNode;
 import com.example.EPPOI.repository.*;
-import com.example.EPPOI.service.dtoManager.DtoEntityManager;
 import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +25,6 @@ public class EnteServiceImpl implements EnteService {
 
     private final GeneralUserService generalUserService;
     private final UserRoleRepository userRoleRepository;
-    private final DtoEntityManager<CoordsNode, CoordsDTO> coordsDTOManager;
-    private final DtoEntityManager<PoiTagRel, PoiTagRelDTO> poiTagRelDTOManager;
     private final PoiRequestService poiRequestService;
     private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
     private final PoiService poiService;
@@ -65,6 +60,18 @@ public class EnteServiceImpl implements EnteService {
         PoiNode toModify = this.poiService.findPoiById(poiToModify);
         log.info("poi to modify :{}", toModify.getName());
         return this.poiService.setParamsToPoi(toModify, form);
+    }
+
+    @Override
+    public void modifyPoiRequest(EnteNode ente, Long idRequest, PoiForm form) throws NullPointerException {
+        RequestPoiNode toSet = this.poiRequestService.getRequestById(idRequest);
+        toSet.setIsAccepted(true);
+        this.poiRequestService.saveRequest(toSet);
+        PoiNode result;
+        if (Objects.isNull(toSet.getTarget())) result = this.createPoi(ente, form);
+        else result = this.modifyPoi(ente, form, toSet.getTarget().getId());
+        result.getContributors().add(toSet.getCreatedBy());
+        this.poiService.savePoi(result);
     }
 
     @Override
@@ -126,16 +133,16 @@ public class EnteServiceImpl implements EnteService {
         log.info("cities : {}", cities.stream().map(CityNode::getName).toList());
         cities.forEach(c -> entes.addAll(this.getEntesByCity(c)));
         log.info("enti coinvolti {}", entes.stream().map(EnteNode::getName).toList());
-        result.setConsensus(entes.size()-1);
+        result.setConsensus(entes.size() - 1);
         log.info("entes size {}", entes.size());
         this.itineraryService.fillItinerary(result, POIsToAdd);
         entes.forEach(e -> {
             boolean toSet = e.getId().equals(ente.getId());
-            if(toSet) e.getItineraryRequests().add(new ItineraryRequestRel(result, true));
+            if (toSet) e.getItineraryRequests().add(new ItineraryRequestRel(result, true));
             else e.getItineraryRequests().add(new ItineraryRequestRel(result, false));
         });
         this.enteRepository.saveAll(entes);
-        log.info("requests {}",ente.getItineraryRequests());
+        log.info("requests {}", ente.getItineraryRequests());
         return result;
     }
 
@@ -174,9 +181,7 @@ public class EnteServiceImpl implements EnteService {
                                     .toList()
                                     .contains(target.getId()))
                             .map(EnteNode::getCity)
-                            .forEach(c -> {
-                                this.cityService.addItinerary(c, it);
-                            });
+                            .forEach(c -> this.cityService.addItinerary(c, it));
                 }
             }
         } else {
