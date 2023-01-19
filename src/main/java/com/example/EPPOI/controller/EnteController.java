@@ -71,6 +71,7 @@ public class EnteController {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         List<ItineraryRequestDTO> requests = ente.getItineraryRequests().stream()
                 .map(ItineraryRequestRel::getRequest)
+                .filter(i -> !i.getAccepted() && i.getConsensus()>0)
                 .map(this.itineraryRequestDTOManager::getDtofromEntity)
                 .toList();
         return ResponseEntity.ok(requests);
@@ -193,7 +194,7 @@ public class EnteController {
     }
 
     @GetMapping("/poi-requests/{id}")
-    public ResponseEntity<?> getPoiRequests(HttpServletRequest request,@PathVariable String id) {
+    public ResponseEntity<?> getPoiRequest(HttpServletRequest request,@PathVariable String id) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         Long idRequest = Long.parseLong(id);
         Map<String, String> errors = new HashMap<>();
@@ -224,7 +225,7 @@ public class EnteController {
     }
 
     @PostMapping("/poi-requests/{id}")
-    public ResponseEntity<?> acceptPoiRequests(HttpServletRequest request,@PathVariable String id,
+    public ResponseEntity<?> modifyRequest(HttpServletRequest request,@PathVariable String id,
                                                @RequestBody PoiForm form) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         Long idRequest = Long.parseLong(id);

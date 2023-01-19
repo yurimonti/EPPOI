@@ -4,31 +4,22 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.example.EPPOI.model.CityNode;
-import com.example.EPPOI.model.ItineraryNode;
+import com.example.EPPOI.model.CoordsNode;
 import com.example.EPPOI.model.ThirdPartyRegistrationRel;
 import com.example.EPPOI.model.ThirdPartyRegistrationRequest;
-import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.*;
 import com.example.EPPOI.repository.*;
 import com.example.EPPOI.security.CustomAuthenticationFilter;
-import com.example.EPPOI.security.JwtTokenProvider;
 import com.example.EPPOI.security.TokenManager;
-import com.example.EPPOI.service.EnteService;
 import com.example.EPPOI.service.GeneralUserService;
-import com.example.EPPOI.service.PoiService;
-import com.example.EPPOI.service.TouristService;
+import com.example.EPPOI.utility.ErrorsMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,14 +45,44 @@ public class AuthController {
 
     private final EnteRepository enteRepository;
 
+    private final CoordsRepository coordinatesRepository;
+
     @Data
-    private static class UserBody {
+    private static class LoginUserBody {
         private String username;
         private String password;
     }
 
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    private static class RegistrationUserBody extends LoginUserBody {
+        private String name;
+        private String surname;
+        private String email;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    private static class RegistrationEnteBody extends RegistrationUserBody {
+        private Long cityId;
+    }
+
+    @Data
+    private static class ORSCity{
+        private List<String> identifiers;
+        private Double lat;
+        private Double lon;
+        private String name;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    private static class RegistrationEnteJson extends RegistrationUserBody {
+        private ORSCity city;
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserBody body) {
+    public ResponseEntity<?> login(@RequestBody LoginUserBody body) {
         log.info("Body {}", body);
         Map<String, String> tokens;
         try {
@@ -72,32 +93,70 @@ public class AuthController {
         return ResponseEntity.ok(tokens);
     }
 
+    private boolean verifyCondition(String email, String username) {
+        List<UserNode> users = this.userService.getUsers();
+        return users.stream().anyMatch(u -> u.getUsername().equals(username) || u.getEmail().equals(email));
+    }
+
     @PostMapping("/registration")
-    public ResponseEntity<?> signup(@RequestBody Map<String, Object> body) {
-        String username = (String) body.get("username");
-        String password = (String) body.get("password");
-        String email = (String) body.get("email");
-        String name = (String) body.get("name");
-        String surname = (String) body.get("surname");
+    public ResponseEntity<?> signup(@RequestBody RegistrationUserBody body) {
         UserRoleNode role = this.userRoleRepository.findByName("TOURIST");
-        UserNode user = new TouristNode(name, surname, email, password, username, role);
+        if (this.verifyCondition(body.getEmail(), body.getUsername())) return new ResponseEntity<>(
+                new ErrorsMap("esiste un utente con queste credenziali"),HttpStatus.NOT_ACCEPTABLE);
+        UserNode user = new TouristNode(body.getName(), body.getSurname(), body.getEmail(), body.getPassword(),
+                body.getUsername(), role);
         this.userService.saveUser(user);
         log.info("user registered {}", user);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/registration-ente")
-    public ResponseEntity<?> signupEnte(@RequestBody Map<String, Object> body) {
-        String username = (String) body.get("username");
-        String password = (String) body.get("password");
-        String email = (String) body.get("email");
-        String name = (String) body.get("name");
-        String surname = (String) body.get("surname");
-        Long cityId = Long.parseLong((String) body.get("cityId"));
+    public ResponseEntity<?> signupEnte(@RequestBody RegistrationEnteBody body) {
+        if (this.verifyCondition(body.getEmail(), body.getUsername())) return new ResponseEntity<>(
+                new ErrorsMap("esiste un utente con queste credenziali"),HttpStatus.NOT_ACCEPTABLE);
         UserRoleNode role = this.userRoleRepository.findByName("ENTE");
-        CityNode cityNode = this.cityRepository.findById(cityId)
+        CityNode cityNode = this.cityRepository.findById(body.getCityId())
                 .orElseThrow(() -> new NullPointerException("No such city"));
-        UserNode user = new EnteNode(name, surname, email, password, username, cityNode, role);
+        UserNode user = new EnteNode(body.getUsername(), body.getSurname(), body.getEmail(), body.getPassword(),
+                body.getUsername(), cityNode, role);
+        this.userService.saveUser(user);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/ente/registration")
+    public ResponseEntity<?> signEnte(@RequestBody RegistrationEnteJson body) {
+        if(Objects.isNull(body.getCity())) return new ResponseEntity<>(
+                new ErrorsMap("manca la città nelle credenziali"),HttpStatus.NOT_ACCEPTABLE);
+        List<Long> identifiers = new ArrayList<>();
+        body.getCity().getIdentifiers().forEach(i -> {
+            String toAdd = i.contains(":") ? i.substring(i.lastIndexOf(":")+1,i.length()-1) : i;
+            identifiers.add(Long.parseLong(toAdd));
+        });
+        boolean cityIsPresent = false;
+        Long cityId=null;
+        for (Long id : identifiers) {
+            if(this.cityRepository.findAll().stream().anyMatch(i -> i.getIdentifiers().contains(id))) {
+                cityId = this.cityRepository.findAll().stream().filter(i -> i.getIdentifiers().contains(id)).map(i -> i.getId()).findFirst().get();
+                cityIsPresent = true;
+            }
+        }
+        log.info("City Found: " + cityIsPresent);
+        if (this.verifyCondition(body.getEmail(), body.getUsername())) return new ResponseEntity<>(
+                new ErrorsMap("esiste un utente con queste credenziali"),HttpStatus.NOT_ACCEPTABLE);
+        UserRoleNode role = this.userRoleRepository.findByName("ENTE");
+        CityNode city;
+        if(!cityIsPresent){
+            CoordsNode cityCoords = new CoordsNode(body.getCity().lat, body.getCity().getLon());
+            this.coordinatesRepository.save(cityCoords);
+            city = new CityNode(body.getCity().getName(),cityCoords);
+            city.setIdentifiers(identifiers);
+            this.cityRepository.save(city);
+        }else {
+            city = this.cityRepository.findById(cityId).get();
+        }
+        log.info("This is city {}", city.getName());
+        UserNode user = new EnteNode(body.getName(), body.getSurname(), body.getEmail(), body.getPassword(),
+                body.getUsername(), city, role);
         this.userService.saveUser(user);
         return ResponseEntity.ok().build();
     }
@@ -132,7 +191,7 @@ public class AuthController {
             TokenManager tokenManager = TokenManager.getInstance();
             JWTVerifier verifier = JWT.require(tokenManager.getRefreshAlgorithm()).build();
             DecodedJWT decodedJWT = verifier.verify(refresh_token);
-            if(decodedJWT.getExpiresAt().before(new Date())){
+            if (decodedJWT.getExpiresAt().before(new Date())) {
                 response.setContentType("application/json");
                 response.setHeader("error", "refresh token expired");
                 response.setStatus(HttpStatus.FORBIDDEN.value());
