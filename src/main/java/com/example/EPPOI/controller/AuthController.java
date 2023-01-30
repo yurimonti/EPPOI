@@ -10,6 +10,7 @@ import com.example.EPPOI.model.ThirdPartyRegistrationRequest;
 import com.example.EPPOI.model.user.*;
 import com.example.EPPOI.repository.*;
 import com.example.EPPOI.security.CustomAuthenticationFilter;
+import com.example.EPPOI.security.TokenCycleService;
 import com.example.EPPOI.security.TokenManager;
 import com.example.EPPOI.service.GeneralUserService;
 import com.example.EPPOI.utility.ErrorsMap;
@@ -47,6 +48,8 @@ public class AuthController {
 
     private final CoordsRepository coordinatesRepository;
 
+    private final TokenCycleService tokenCycleService;
+
     @Data
     private static class LoginUserBody {
         private String username;
@@ -68,7 +71,7 @@ public class AuthController {
     }
 
     @Data
-    private static class ORSCity{
+    private static class ORSCity {
         private List<String> identifiers;
         private Double lat;
         private Double lon;
@@ -87,10 +90,19 @@ public class AuthController {
         Map<String, String> tokens;
         try {
             tokens = this.customAuthenticationFilter.authenticate(body.getUsername(), body.getPassword(), "http://localhost:8080/api/v1/auth/login");
+            this.tokenCycleService.addToken(tokens.get("refresh_token"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getStackTrace());
         }
         return ResponseEntity.ok(tokens);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Map<String,String> body){
+        String refreshToken = body.get("refresh_token");
+        if(refreshToken == null) return new ResponseEntity<>(new ErrorsMap("token is required"),HttpStatus.FORBIDDEN);
+        this.tokenCycleService.removeToken(refreshToken);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     private boolean verifyCondition(String email, String username) {
@@ -102,7 +114,7 @@ public class AuthController {
     public ResponseEntity<?> signup(@RequestBody RegistrationUserBody body) {
         UserRoleNode role = this.userRoleRepository.findByName("TOURIST");
         if (this.verifyCondition(body.getEmail(), body.getUsername())) return new ResponseEntity<>(
-                new ErrorsMap("esiste un utente con queste credenziali"),HttpStatus.NOT_ACCEPTABLE);
+                new ErrorsMap("esiste un utente con queste credenziali"), HttpStatus.NOT_ACCEPTABLE);
         UserNode user = new TouristNode(body.getName(), body.getSurname(), body.getEmail(), body.getPassword(),
                 body.getUsername(), role);
         this.userService.saveUser(user);
@@ -113,7 +125,7 @@ public class AuthController {
     @PostMapping("/registration-ente")
     public ResponseEntity<?> signupEnte(@RequestBody RegistrationEnteBody body) {
         if (this.verifyCondition(body.getEmail(), body.getUsername())) return new ResponseEntity<>(
-                new ErrorsMap("esiste un utente con queste credenziali"),HttpStatus.NOT_ACCEPTABLE);
+                new ErrorsMap("esiste un utente con queste credenziali"), HttpStatus.NOT_ACCEPTABLE);
         UserRoleNode role = this.userRoleRepository.findByName("ENTE");
         CityNode cityNode = this.cityRepository.findById(body.getCityId())
                 .orElseThrow(() -> new NullPointerException("No such city"));
@@ -125,33 +137,33 @@ public class AuthController {
 
     @PostMapping("/ente/registration")
     public ResponseEntity<?> signEnte(@RequestBody RegistrationEnteJson body) {
-        if(Objects.isNull(body.getCity())) return new ResponseEntity<>(
-                new ErrorsMap("manca la città nelle credenziali"),HttpStatus.NOT_ACCEPTABLE);
+        if (Objects.isNull(body.getCity())) return new ResponseEntity<>(
+                new ErrorsMap("manca la città nelle credenziali"), HttpStatus.NOT_ACCEPTABLE);
         List<Long> identifiers = new ArrayList<>();
         body.getCity().getIdentifiers().forEach(i -> {
-            String toAdd = i.contains(":") ? i.substring(i.lastIndexOf(":")+1,i.length()-1) : i;
+            String toAdd = i.contains(":") ? i.substring(i.lastIndexOf(":") + 1, i.length() - 1) : i;
             identifiers.add(Long.parseLong(toAdd));
         });
         boolean cityIsPresent = false;
-        Long cityId=null;
+        Long cityId = null;
         for (Long id : identifiers) {
-            if(this.cityRepository.findAll().stream().anyMatch(i -> i.getIdentifiers().contains(id))) {
+            if (this.cityRepository.findAll().stream().anyMatch(i -> i.getIdentifiers().contains(id))) {
                 cityId = this.cityRepository.findAll().stream().filter(i -> i.getIdentifiers().contains(id)).map(i -> i.getId()).findFirst().get();
                 cityIsPresent = true;
             }
         }
         log.info("City Found: " + cityIsPresent);
         if (this.verifyCondition(body.getEmail(), body.getUsername())) return new ResponseEntity<>(
-                new ErrorsMap("esiste un utente con queste credenziali"),HttpStatus.NOT_ACCEPTABLE);
+                new ErrorsMap("esiste un utente con queste credenziali"), HttpStatus.NOT_ACCEPTABLE);
         UserRoleNode role = this.userRoleRepository.findByName("ENTE");
         CityNode city;
-        if(!cityIsPresent){
+        if (!cityIsPresent) {
             CoordsNode cityCoords = new CoordsNode(body.getCity().lat, body.getCity().getLon());
             this.coordinatesRepository.save(cityCoords);
-            city = new CityNode(body.getCity().getName(),cityCoords);
+            city = new CityNode(body.getCity().getName(), cityCoords);
             city.setIdentifiers(identifiers);
             this.cityRepository.save(city);
-        }else {
+        } else {
             city = this.cityRepository.findById(cityId).get();
         }
         log.info("This is city {}", city.getName());
@@ -182,6 +194,57 @@ public class AuthController {
         /*UserNode user = new ThirdUserNode(name, surname, email, password, username, role);
         this.userService.saveUser(user);*/
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/real_refresh")
+    public void realRefresh(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> body) throws IOException {
+        String refresh_token = body.get("refresh_token");
+        if(Objects.isNull(refresh_token) || !tokenCycleService.containsToken(refresh_token)){
+            response.setContentType("application/json");
+            response.setHeader("error", "refresh token not valid");
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            Map<String, String> errors = new HashMap<>();
+            errors.put("error", "refresh token not valid");
+            new ObjectMapper().writeValue(response.getOutputStream(), errors);
+        }else {
+            try {
+                TokenManager tokenManager = TokenManager.getInstance();
+                JWTVerifier verifier = JWT.require(tokenManager.getRefreshAlgorithm()).build();
+                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                if (decodedJWT.getExpiresAt().before(new Date())) {
+                    response.setContentType("application/json");
+                    response.setHeader("error", "refresh token expired");
+                    response.setStatus(HttpStatus.FORBIDDEN.value());
+                }
+                String username = decodedJWT.getSubject();
+                UserNode user = this.userService.getUser(username);
+                this.tokenCycleService.removeToken(refresh_token);
+                String access_token = JWT.create().withSubject(user.getUsername())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
+                        .withIssuer("http://localhost:8080/api/v1/auth/refresh")
+                        .withClaim("role", user.getRoles().stream().map(UserRoleNode::getName).collect(Collectors.toList()))
+                        .sign(tokenManager.getAccessAlgorithm());
+                String new_refresh = JWT.create().withSubject(user.getUsername())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 3600 * 7 * 24))
+                        .withIssuer("http://localhost:8080/api/v1/auth/refresh")
+                        .withClaim("role", user.getRoles().stream().map(UserRoleNode::getName).collect(Collectors.toList()))
+                        .sign(tokenManager.getRefreshAlgorithm());
+                Map<String, String> tokens = new HashMap<>();
+                tokens.put("access_token", access_token);
+                tokens.put("refresh_token", new_refresh);
+                this.tokenCycleService.addToken(new_refresh);
+                response.setContentType("application/json");
+                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+            } catch (Exception exception) {
+                response.setHeader("error", exception.getMessage());
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                this.tokenCycleService.removeToken(refresh_token);
+                Map<String, String> errors = new HashMap<>();
+                errors.put("error", exception.getMessage());
+                response.setContentType("application/json");
+                new ObjectMapper().writeValue(response.getOutputStream(), errors);
+            }
+        }
     }
 
     @PostMapping("/refresh")
