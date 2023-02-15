@@ -82,7 +82,7 @@ public class PoiServiceImpl implements PoiService {
     }
 
     @Override
-    public PoiNode createPoiFromParams(PoiForm form) {
+    public PoiNode createPoiFromParams(PoiForm form) { //TODO probabilmente qui la creazione non serve
         List<PoiTypeNode> types = form.getTypes().stream().map(this.typeDtoManager::getEntityfromDto).toList();
         log.info("types : {}",types);
         List<CategoryNode> categories = new ArrayList<>();
@@ -91,23 +91,25 @@ public class PoiServiceImpl implements PoiService {
         log.info("categories : {}",categories.stream().distinct().toList());
         List<PoiTagRel> tagValues = form.getTagValues().stream().map(this.poiTagRelDTOManager::getEntityfromDto).toList();
         log.info("tag values : {}",tagValues);
-        CategoryNode ristorazione = this.categoryRepository.findByName("Ristorazione");
+        /*CategoryNode ristorazione = this.categoryRepository.findByName("Ristorazione");
         log.info("ristorazione : {}",ristorazione);
         CategoryNode mobility = this.categoryRepository.findByName("Mobilità");
         log.info("mobilità : {}",mobility);
-        if (!Objects.isNull(ristorazione) && categoriesId.contains(ristorazione.getId()))
+        if (!Objects.isNull(ristorazione) && categoriesId.contains(ristorazione.getId())){
             return this.abstractFactoryPoi.createRestaurantPoi(form.getName(), form.getDescription(),
                     this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
                     this.timeDtoManager.getEntityfromDto(form.getTimeSlot()),
                     form.getTimeToVisit(), this.addressDtoManager.getEntityfromDto(form.getAddress()),
                     form.getTicketPrice(),types, this.contactDtoManager.getEntityfromDto(form.getContact()),
                     tagValues);
+        }
+
         if (!Objects.isNull(mobility) && categoriesId.contains(mobility.getId()))
             return this.abstractFactoryPoi.createEvPoi(form.getName(), form.getDescription(),
                     this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
                     this.timeDtoManager.getEntityfromDto(form.getTimeSlot()),
                     form.getTimeToVisit(), this.addressDtoManager.getEntityfromDto(form.getAddress()), form.getTicketPrice(),
-                    types, this.contactDtoManager.getEntityfromDto(form.getContact()),tagValues);
+                    types, this.contactDtoManager.getEntityfromDto(form.getContact()),tagValues);*/
         return this.abstractFactoryPoi.createBasePoi(form.getName(), form.getDescription(),
                 this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
                 this.timeDtoManager.getEntityfromDto(form.getTimeSlot()),

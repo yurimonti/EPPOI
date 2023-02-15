@@ -5,7 +5,6 @@ import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
 import com.example.EPPOI.repository.ItineraryRequestRepository;
-import com.example.EPPOI.repository.ThirdRequestRegistrationRepository;
 import com.example.EPPOI.service.EnteService;
 import com.example.EPPOI.service.PoiRequestService;
 import com.example.EPPOI.service.PoiService;
@@ -30,8 +29,6 @@ import java.util.stream.Stream;
 public class EnteController {
 
     private final MiddlewareToken<EnteNode> middlewareToken;
-
-    private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
     private final PoiService poiService;
     private final PoiRequestService poiRequestService;
@@ -39,12 +36,11 @@ public class EnteController {
     private final DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager;
     private final EnteService enteService;
 
-    public EnteController(EnteService enteService, ThirdRequestRegistrationRepository thirdRequestRegistrationRepository,
-                          ItineraryRequestRepository itineraryRequestRepository, PoiRequestService poiRequestService,
-                          PoiService poiService, DtoEntityManager<ItineraryRequestNode,
-            ItineraryRequestDTO> itineraryRequestDTOManager, DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager) {
+    public EnteController(EnteService enteService, ItineraryRequestRepository itineraryRequestRepository,
+                          PoiRequestService poiRequestService, PoiService poiService,
+                          DtoEntityManager<ItineraryRequestNode, ItineraryRequestDTO> itineraryRequestDTOManager,
+                          DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager) {
         this.enteService = enteService;
-        this.thirdRequestRegistrationRepository = thirdRequestRegistrationRepository;
         this.middlewareToken = new MiddlewareToken<>(enteService.getRepository());
         this.itineraryRequestRepository = itineraryRequestRepository;
         this.poiRequestService = poiRequestService;
@@ -243,15 +239,13 @@ public class EnteController {
 
     //------------------------- THIRD  ------------------------------------------------
 
-    @PostMapping("/third-registration")
-    public ResponseEntity<?> singUpThird(@RequestParam Boolean consensus, @RequestBody Map<String, Object> body,
-                                         HttpServletRequest request) {
+    @GetMapping("/poi-requests-thirds") //TODO vedere se serve e in caso fix
+    public ResponseEntity<?> getPoiRequestsThirds(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        ThirdPartyRegistrationRequest requestBody = this.thirdRequestRegistrationRepository
-                .findById(Long.parseLong((String) body.get("request"))).orElseThrow(NullPointerException::new);
-        log.info("ThirdPartyRegistration {}", requestBody);
-        this.enteService.setConsensusToRegistration(ente, requestBody, consensus);
-        log.info("POST method -> ThirdPartyRegistration {}", requestBody);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(ente.getPoiRequests().stream()
+                .filter(r -> r.getTypes().stream().map(PoiTypeNode::getName).toList().contains("Restaurant"))
+                //TODO add more if needed
+                .map(this.poiRequestService::getDTOfromRequest).toList());
     }
 }

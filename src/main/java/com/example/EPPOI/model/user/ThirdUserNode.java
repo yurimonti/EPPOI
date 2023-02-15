@@ -19,22 +19,18 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class ThirdUserNode extends UserNode {
+    private String companyName;
     @Relationship(type = "THIRD_MANAGES_POIS", direction = Relationship.Direction.OUTGOING)
     private List<PoiNode> thirdPOIs;
 
     @Relationship(type = "THIRD_MANAGES_POI_REQUEST", direction = Relationship.Direction.OUTGOING)
     private List<RequestPoiNode> poiRequests;
 
-    public ThirdUserNode(String name, String surname, String email, String password, String username, UserRoleNode... roles) {
+    public ThirdUserNode(String companyName, String name, String surname, String email, String password, String username, UserRoleNode... roles) {
         super(name, surname, email, password, username, roles);
+        this.companyName = companyName;
         this.poiRequests = new ArrayList<>();
         this.thirdPOIs = new ArrayList<>();
     }
 
-    public ThirdUserNode(String name, String surname, String email, String password, String username,
-                         List<PoiNode> thirdPOIs, List<RequestPoiNode> poiRequests, UserRoleNode... roles) {
-        this(name, surname, email, password, username, roles);
-        this.thirdPOIs = thirdPOIs;
-        this.poiRequests = poiRequests;
-    }
 }

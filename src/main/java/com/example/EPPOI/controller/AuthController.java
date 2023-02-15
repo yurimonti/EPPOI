@@ -4,31 +4,18 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.example.EPPOI.model.CityNode;
-import com.example.EPPOI.model.ItineraryNode;
-import com.example.EPPOI.model.ThirdPartyRegistrationRel;
-import com.example.EPPOI.model.ThirdPartyRegistrationRequest;
-import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.*;
 import com.example.EPPOI.repository.*;
 import com.example.EPPOI.security.CustomAuthenticationFilter;
-import com.example.EPPOI.security.JwtTokenProvider;
 import com.example.EPPOI.security.TokenManager;
-import com.example.EPPOI.service.EnteService;
 import com.example.EPPOI.service.GeneralUserService;
-import com.example.EPPOI.service.PoiService;
-import com.example.EPPOI.service.TouristService;
+import com.example.EPPOI.service.GeneralUserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,12 +34,7 @@ public class AuthController {
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final GeneralUserService userService;
     private final UserRoleRepository userRoleRepository;
-
     private final CityRepository cityRepository;
-
-    private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
-
-    private final EnteRepository enteRepository;
 
     @Data
     private static class UserBody {
@@ -104,25 +86,16 @@ public class AuthController {
 
     @PostMapping("/registration-third")
     public ResponseEntity<?> signupThird(@RequestBody Map<String, Object> body) {
+        String companyName = (String) body.get("companyName");
         String username = (String) body.get("username");
         String password = (String) body.get("password");
         String email = (String) body.get("email");
         String name = (String) body.get("name");
         String surname = (String) body.get("surname");
-        List<Long> cityIds = ((List<String>) body.get("cityNames")).stream().map(Long::parseLong).toList();
-        List<EnteNode> entes = new ArrayList<>();
-        cityIds.forEach(cityId -> entes.addAll(this.enteRepository.findAll().stream().filter(e ->
-                e.getCity().getId().equals(cityId)).toList()));
-        ThirdPartyRegistrationRequest result =
-                new ThirdPartyRegistrationRequest(name, surname, email, password, username, entes.size());
-        this.thirdRequestRegistrationRepository.save(result);
-        entes.forEach(enteNode -> {
-            enteNode.getRegistrationRequests().add(new ThirdPartyRegistrationRel(result, false));
-            this.enteRepository.save(enteNode);
-        });
-        /*UserNode user = new ThirdUserNode(name, surname, email, password, username, role);
-        this.userService.saveUser(user);*/
-        return ResponseEntity.ok(result);
+        UserRoleNode role = this.userRoleRepository.findByName("THIRD_PARTY");
+        UserNode newUser = new ThirdUserNode(companyName, name, surname,email, password, username, role);
+        this.userService.saveUser(newUser);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/refresh")

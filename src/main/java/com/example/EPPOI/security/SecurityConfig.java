@@ -34,6 +34,7 @@ public class SecurityConfig{
         http.cors().configure(http);
         http.authorizeHttpRequests().antMatchers("/pois").permitAll();
         http.authorizeHttpRequests().antMatchers("/auth/**").permitAll();
+        http.authorizeHttpRequests().antMatchers("/thirds/**").permitAll(); //TODO fixme later
         http.authorizeHttpRequests().antMatchers("/user/**").authenticated();
         http.authorizeHttpRequests().antMatchers("/tourist/**").hasAnyAuthority("TOURIST");
         http.authorizeHttpRequests().antMatchers("/ente/**").hasAnyAuthority("ENTE");
