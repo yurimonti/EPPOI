@@ -9,6 +9,7 @@ import com.example.EPPOI.utility.AbstractFactoryPoi;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -45,6 +46,7 @@ public class PoiServiceImpl implements PoiService {
         return this.poiRepository.findById(id).orElseThrow(() -> new NullPointerException("PoiNode not found"));
     }
 
+/*
     private void deleteTimeSlot(TimeSlotNode toDelete) {
         this.timeSlotRepository.delete(toDelete);
     }
@@ -57,13 +59,16 @@ public class PoiServiceImpl implements PoiService {
     private void deleteCoordinate(CoordsNode toDelete) {
         this.coordsRepository.delete(toDelete);
     }
+*/
 
     private void deletePoiPrivate(PoiNode toDelete)throws NullPointerException{
         if(Objects.isNull(toDelete)) throw new NullPointerException("poi not available");
-        this.deleteTimeSlot(toDelete.getHours());
-        this.deleteAddress(toDelete.getAddress());
-        this.deleteCoordinate(toDelete.getCoordinate());
-        this.deleteContact(toDelete.getContact());
+        this.timeSlotRepository.deleteById(toDelete.getHours().getId());
+        this.coordsRepository.deleteById(toDelete.getCoordinate().getId());
+        this.addressRepository.deleteById(toDelete.getAddress().getId());
+        this.contactRepository.deleteById(toDelete.getContact().getId());
+        toDelete.setTypes(new ArrayList<>());
+        toDelete.setTagValues(new ArrayList<>());
         this.poiRepository.delete(toDelete);
     }
 
@@ -223,12 +228,16 @@ public class PoiServiceImpl implements PoiService {
         result.setDescription(toSet.getDescription());
         result.setTimeToVisit(toSet.getTimeToVisit());
         result.setTicketPrice(toSet.getTicketPrice());
-        result.getContributors().add(toSet.getCreatedBy());
+        if(!result.getContributors().contains(toSet.getCreatedBy()))
+            result.getContributors().add(toSet.getCreatedBy());
         log.info("settaggio base {} {} {} {}", result.getName(), result.getDescription(), result.getTimeToVisit()
                 , result.getTicketPrice());
         result.setCoordinate(toSet.getCoordinate());
-        toSet.getTagValues().forEach(t -> result.getTagValues().add(t));
+        List<PoiTagRel> values = new ArrayList<>();
+        toSet.getTagValues().forEach(t -> values.add(new PoiTagRel(t.getTag(),t.getBooleanValue(),t.getStringValue())));
+        result.setTagValues(values);
         log.info("settaggio tagValues {}", result.getTagValues());
+        result.setTypes(new ArrayList<>());
         toSet.getTypes().forEach(t -> result.getTypes().add(t));
         log.info("settaggio types {}", result.getTypes());
         result.setAddress(toSet.getAddress());

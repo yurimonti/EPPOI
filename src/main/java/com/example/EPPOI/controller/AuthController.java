@@ -42,8 +42,6 @@ public class AuthController {
 
     private final CityRepository cityRepository;
 
-    private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
-
     private final EnteRepository enteRepository;
 
     private final CoordsRepository coordinatesRepository;
@@ -102,7 +100,7 @@ public class AuthController {
         String refreshToken = body.get("refresh_token");
         if(refreshToken == null) return new ResponseEntity<>(new ErrorsMap("token is required"),HttpStatus.FORBIDDEN);
         this.tokenCycleService.removeToken(refreshToken);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private boolean verifyCondition(String email, String username) {
@@ -171,29 +169,6 @@ public class AuthController {
                 body.getUsername(), city, role);
         this.userService.saveUser(user);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/registration-third")
-    public ResponseEntity<?> signupThird(@RequestBody Map<String, Object> body) {
-        String username = (String) body.get("username");
-        String password = (String) body.get("password");
-        String email = (String) body.get("email");
-        String name = (String) body.get("name");
-        String surname = (String) body.get("surname");
-        List<Long> cityIds = ((List<String>) body.get("cityNames")).stream().map(Long::parseLong).toList();
-        List<EnteNode> entes = new ArrayList<>();
-        cityIds.forEach(cityId -> entes.addAll(this.enteRepository.findAll().stream().filter(e ->
-                e.getCity().getId().equals(cityId)).toList()));
-        ThirdPartyRegistrationRequest result =
-                new ThirdPartyRegistrationRequest(name, surname, email, password, username, entes.size());
-        this.thirdRequestRegistrationRepository.save(result);
-        entes.forEach(enteNode -> {
-            enteNode.getRegistrationRequests().add(new ThirdPartyRegistrationRel(result, false));
-            this.enteRepository.save(enteNode);
-        });
-        /*UserNode user = new ThirdUserNode(name, surname, email, password, username, role);
-        this.userService.saveUser(user);*/
-        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/real_refresh")

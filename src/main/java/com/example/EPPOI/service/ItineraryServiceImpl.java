@@ -28,6 +28,7 @@ public class ItineraryServiceImpl implements ItineraryService{
 
     private final CityService cityService;
 
+    //TODO:serve per DTO
     private List<CategoryNode> distinctCategories(List<PoiNode> targets){
         List<PoiTypeNode> types = new ArrayList<>();
         List<CategoryNode> categories = new ArrayList<>();
@@ -43,7 +44,7 @@ public class ItineraryServiceImpl implements ItineraryService{
             PoiNode toAdd = target.get(i-1);
             toFill.getPoints().add(new ItineraryRelPoi(toAdd,i));
         }
-        toFill.setCategories(this.distinctCategories(target));
+        /*toFill.setCategories(this.distinctCategories(target));*/
         this.itineraryRepository.save(toFill);
     }
 
@@ -60,6 +61,13 @@ public class ItineraryServiceImpl implements ItineraryService{
 
     @Override
     public void deleteItinerary(ItineraryNode toDelete) {
+    /*@Relationship(type = "ITINERARY_HAS_CATEGORY",direction = Relationship.Direction.OUTGOING)
+    private List<CategoryNode> categories;*/
+        /*List<CategoryNode> categories  = toDelete.getCategories();
+        for (CategoryNode category : categories) {
+            this.categoryRepository.deleteById(category.getId());
+        }*/
+        toDelete.setPoints(new ArrayList<>());
         this.itineraryRepository.delete(toDelete);
     }
 
@@ -81,7 +89,7 @@ public class ItineraryServiceImpl implements ItineraryService{
             PoiNode toAdd = target.get(i-1);
             toFill.getPoints().add(new ItineraryRelPoi(toAdd,i));
         }
-        toFill.setCategories(this.distinctCategories(target));
+        /*toFill.setCategories(this.distinctCategories(target));*/
         this.itineraryRequestRepository.save(toFill);
     }
 
@@ -113,7 +121,7 @@ public class ItineraryServiceImpl implements ItineraryService{
         result.setIsDefault(true);
         result.setGeoJsonList(request.getGeoJsonList());
         request.getPoints().forEach(p -> result.getPoints().add(new ItineraryRelPoi(p.getPoi(),p.getIndex())));
-        result.setCategories(request.getCategories());
+        /*result.setCategories(request.getCategories());*/
         result.setTimeToVisit(request.getTimeToVisit());
         return result;
     }

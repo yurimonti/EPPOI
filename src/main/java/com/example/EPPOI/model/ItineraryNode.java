@@ -21,15 +21,15 @@ public class ItineraryNode {
     private Boolean isDefault;
     @Relationship(type = "ITINERARY_CONTAINS_POI",direction = Relationship.Direction.OUTGOING)
     private List<ItineraryRelPoi> points;
-    @Relationship(type = "ITINERARY_HAS_CATEGORY",direction = Relationship.Direction.OUTGOING)
-    private List<CategoryNode> categories;
+/*    @Relationship(type = "ITINERARY_HAS_CATEGORY",direction = Relationship.Direction.OUTGOING)
+    private List<CategoryNode> categories;*/
 
     private Double timeToVisit;
     private List<String> geoJsonList;
 
     public ItineraryNode() {
         this.points = new ArrayList<>();
-        this.categories = new ArrayList<>();
+/*        this.categories = new ArrayList<>();*/
         this.geoJsonList = new ArrayList<>();
     }
 

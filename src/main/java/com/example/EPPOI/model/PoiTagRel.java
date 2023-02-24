@@ -1,5 +1,6 @@
 package com.example.EPPOI.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.RelationshipId;
@@ -9,6 +10,7 @@ import org.springframework.data.neo4j.core.schema.TargetNode;
 @RelationshipProperties
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PoiTagRel {
     @RelationshipId
     private Long id;
@@ -21,5 +23,10 @@ public class PoiTagRel {
 
     public PoiTagRel(TagNode tag) {
         this.tag = tag;
+    }
+    public PoiTagRel(TagNode tag, Boolean booleanValue, String stringValue) {
+        this.tag = tag;
+        this.booleanValue = booleanValue;
+        this.stringValue = stringValue;
     }
 }

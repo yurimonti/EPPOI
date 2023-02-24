@@ -16,9 +16,9 @@ public interface EnteService extends AppUserService<EnteNode> {
     void modifyPoiRequest(EnteNode ente, Long idRequest, PoiForm form) throws NullPointerException;
     ItineraryNode createItinerary(EnteNode ente, ItineraryForm itineraryForm);
     void setConsensusToItinerary(EnteNode ente,ItineraryRequestNode target,boolean consensus);
-    void setConsensusToRegistration(EnteNode ente,ThirdPartyRegistrationRequest target,boolean consensus);
+    /*void setConsensusToRegistration(EnteNode ente,ThirdPartyRegistrationRequest target,boolean consensus);*/
 
-    void deleteRegistrationRequest(EnteNode ente,ThirdPartyRegistrationRequest target);
+    /*void deleteRegistrationRequest(EnteNode ente,ThirdPartyRegistrationRequest target);*/
     EnteRepository getRepository();
 
     void setConsensusToPoiRequest(EnteNode ente,Long idRequest,Boolean consensus);

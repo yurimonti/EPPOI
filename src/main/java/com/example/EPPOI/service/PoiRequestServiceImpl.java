@@ -6,13 +6,15 @@ import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.model.user.UserNode;
 import com.example.EPPOI.model.user.UserRoleNode;
-import com.example.EPPOI.repository.RequestPoiRepository;
+import com.example.EPPOI.repository.*;
 import com.example.EPPOI.service.dtoManager.DtoEntityManager;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,6 +25,14 @@ public class PoiRequestServiceImpl implements PoiRequestService {
     private final GeneralUserService generalUserService;
     private final RequestPoiRepository requestPoiRepository;
     private final CityService cityService;
+    private final CoordsRepository coordsRepository;
+
+    private final TimeSlotRepository timeSlotRepository;
+
+    private final ContactRepository contactRepository;
+
+    private final AddressRepository addressRepository;
+
     private final DtoEntityManager<PoiTagRel, PoiTagRelDTO> poiTagRelDTOManager;
     private final DtoEntityManager<CoordsNode, CoordsDTO> coordsDtoManager;
     private final DtoEntityManager<PoiTypeNode, PoiTypeDTO> typeDtoManager;
@@ -43,7 +53,14 @@ public class PoiRequestServiceImpl implements PoiRequestService {
 
     @Override
     public void deleteRequest(RequestPoiNode toDelete) {
-        this.requestPoiRepository.delete(toDelete);
+        this.coordsRepository.deleteById(toDelete.getCoordinate().getId());
+        this.addressRepository.deleteById(toDelete.getAddress().getId());
+        this.timeSlotRepository.deleteById(toDelete.getHours().getId());
+        this.contactRepository.deleteById(toDelete.getContact().getId());
+        toDelete.setTarget(null);
+        toDelete.setTypes(new ArrayList<>());
+        toDelete.setTagValues(new ArrayList<>());
+        this.requestPoiRepository.deleteById(toDelete.getId());
     }
 
     @Override

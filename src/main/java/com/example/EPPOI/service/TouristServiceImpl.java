@@ -137,8 +137,8 @@ public class TouristServiceImpl implements TouristService {
                         .filter(e -> e.getCity().getId().equals(c.getId())).toList()));
         log.info("richiesta 6 {}",entes.size());
         result.setConsensus(entes.size());
-        result.setCategories(itinerary.getCategories());
-        log.info("richiesta 7 {}",result.getCategories().size());
+/*        result.setCategories(itinerary.getCategories());
+        log.info("richiesta 7 {}",result.getCategories().size());*/
         this.itineraryService.saveItinerary(result);
         entes.forEach(e -> e.getItineraryRequests().add(new ItineraryRequestRel(result, false)));
         log.info("richiesta 8 {}",entes.size());
@@ -164,7 +164,7 @@ public class TouristServiceImpl implements TouristService {
     public void deleteItinerary(TouristNode tourist, Long itineraryId) {
         ItineraryNode itineraryNode = this.itineraryService.getItinerary(itineraryId);
         if (tourist.getItineraries().stream().map(ItineraryNode::getId).noneMatch(l -> l.equals(itineraryId)))
-            throw new IllegalArgumentException("This itinerary is not available for your city");
+            throw new IllegalArgumentException("This itinerary is not available for you");
         this.itineraryService.deleteItinerary(itineraryNode);
     }
 

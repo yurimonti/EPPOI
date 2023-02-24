@@ -40,12 +40,12 @@ public class TouristController {
 
     private final MiddlewareToken<TouristNode> middlewareToken;
 
-    public TouristController(TouristService touristService,PoiService poiService,CityService cityService,
+    public TouristController(TouristService touristService, PoiService poiService, CityService cityService,
                              DtoEntityManager<ItineraryNode, ItineraryDTO> itineraryDTOManager) {
         this.touristService = touristService;
         this.poiService = poiService;
         this.cityService = cityService;
-        this.itineraryDTOManager= itineraryDTOManager;
+        this.itineraryDTOManager = itineraryDTOManager;
         this.middlewareToken = new MiddlewareToken<>(touristService.getRepository());
     }
 
@@ -60,7 +60,7 @@ public class TouristController {
     //-----------------------Poi Request -----------------------------------------------------
 
     @GetMapping("/poi-requests")
-    public ResponseEntity<?> getRequests(HttpServletRequest request){
+    public ResponseEntity<?> getRequests(HttpServletRequest request) {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
         return ResponseEntity.ok(this.touristService.getAllRequestDTOs(tourist));
     }
@@ -74,18 +74,22 @@ public class TouristController {
     }
 
     @DeleteMapping("/poi-requests/{id}")
-    public ResponseEntity<?> deletePoiRequest(HttpServletRequest request,@PathVariable String id){
+    public ResponseEntity<?> deletePoiRequest(HttpServletRequest request, @PathVariable String id) {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
         Long idRequest = Long.parseLong(id);
-        try{
-            this.touristService.deletePoiRequest(tourist,idRequest);
-            return ResponseEntity.ok().build();
-        }
-        catch(Exception e){
+        Map<String, String> message = new HashMap<>();
+        HttpStatus status;
+        try {
+            this.touristService.deletePoiRequest(tourist, idRequest);
+            message.put("success", "Richiesta eliminata");
+            status = HttpStatus.OK;
+        } catch (Exception e) {
             if (Objects.equals(e.getClass(), NullPointerException.class))
-                return ResponseEntity.notFound().build();
-            return ResponseEntity.badRequest().build();
+                status = HttpStatus.NOT_FOUND;
+            else status = HttpStatus.BAD_REQUEST;
+            message.put("error", "Errore Elaborazione");
         }
+        return new ResponseEntity<>(message, status);
     }
 
     //-------------------------- ITINERARIES ------------------------
@@ -97,27 +101,31 @@ public class TouristController {
     }
 
     @DeleteMapping("/itinerary/{id}")
-    public ResponseEntity<?> deleteItinerary(HttpServletRequest request,@PathVariable String id) {
+    public ResponseEntity<?> deleteItinerary(HttpServletRequest request, @PathVariable String id) {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
-        try{
-            this.touristService.deleteItinerary(tourist,Long.parseLong(id));
-            return ResponseEntity.ok().build();
-        }catch(Exception e){
+        Map<String, String> message = new HashMap<>();
+        HttpStatus status;
+        try {
+            this.touristService.deleteItinerary(tourist, Long.parseLong(id));
+            message.put("success", "Itinerario eliminato");
+            status = HttpStatus.OK;
+        } catch (Exception e) {
             if (Objects.equals(e.getClass(), NullPointerException.class))
-                return ResponseEntity.notFound().build();
-            return ResponseEntity.badRequest().build();
+                status = HttpStatus.NOT_FOUND;
+            else status = HttpStatus.BAD_REQUEST;
+            message.put("error", "Errore Elaborazione");
         }
+        return new ResponseEntity<>(message, status);
     }
 
     @GetMapping("/city/{id}/itineraries")
-    public ResponseEntity<List<ItineraryDTO>> getItineraries(HttpServletRequest request,@PathVariable String id) {
+    public ResponseEntity<List<ItineraryDTO>> getItineraries(HttpServletRequest request, @PathVariable String id) {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
         Long cityId = Long.parseLong(id);
         try {
             CityNode cityNode = this.cityService.getCityById(cityId);
             return ResponseEntity.ok(cityNode.getItineraries().stream().filter(ItineraryNode::getIsDefault).map(ItineraryDTO::new).toList());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -131,15 +139,15 @@ public class TouristController {
     }
 
     @PostMapping("/itinerary/{id}")
-    public ResponseEntity<?> proposeItinerary(HttpServletRequest request,@PathVariable String id){
+    public ResponseEntity<?> proposeItinerary(HttpServletRequest request, @PathVariable String id) {
         TouristNode tourist = this.middlewareToken.getUserFromToken(request);
         try {
-            return ResponseEntity.ok(this.touristService.proposeItinerary(tourist,Long.parseLong(id)));
-        }catch (Exception e){
+            return ResponseEntity.ok(this.touristService.proposeItinerary(tourist, Long.parseLong(id)));
+        } catch (Exception e) {
             if (Objects.equals(e.getClass(), NullPointerException.class)) {
-                Map<String,String> response = new HashMap<>();
-                response.put("error",e.getMessage());
-                return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+                Map<String, String> response = new HashMap<>();
+                response.put("error", e.getMessage());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
             return ResponseEntity.badRequest().build();
         }

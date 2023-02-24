@@ -26,7 +26,7 @@ public class EnteServiceImpl implements EnteService {
     private final GeneralUserService generalUserService;
     private final UserRoleRepository userRoleRepository;
     private final PoiRequestService poiRequestService;
-    private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;
+    /*private final ThirdRequestRegistrationRepository thirdRequestRegistrationRepository;*/
     private final PoiService poiService;
     private final ItineraryService itineraryService;
 
@@ -192,47 +192,6 @@ public class EnteServiceImpl implements EnteService {
     }
 
     //------------------------------------  THIRD USER MANAGEMENT ---------------------------------------------
-    @Override
-    public void setConsensusToRegistration(EnteNode ente, ThirdPartyRegistrationRequest target, boolean consensus) {
-        ThirdPartyRegistrationRel a = ente.getRegistrationRequests().stream()
-                .filter(u -> u.getRequest().equals(target))
-                .findFirst().orElseThrow(NullPointerException::new);
-        if (consensus) {
-            if (!a.getConsensus()) {
-                a.setConsensus(true);
-                target.setConsensus(target.getConsensus() - 1);
-                this.thirdRequestRegistrationRepository.save(target);
-                if (target.getConsensus() == 0) {
-                    UserRoleNode role = this.userRoleRepository.findByName("THIRD_PARTY");
-                    this.generalUserService.saveUser(new ThirdUserNode(target.getName(), target.getSurname(), target.getEmail(),
-                            target.getPassword(), target.getUsername(), role));
-                    List<EnteNode> entes = this.enteRepository.findAll().stream()
-                            .filter(e ->
-                                    e.getRegistrationRequests().stream()
-                                            .map(ThirdPartyRegistrationRel::getRequest)
-                                            .toList()
-                                            .contains(target))
-                            .toList();
-                    entes.forEach(e -> this.deleteRegistrationRequest(e, target));
-                    this.thirdRequestRegistrationRepository.delete(target);
-                    //this.enteRepository.saveAll(entes);
-                }
-            }
-        } else {
-            this.thirdRequestRegistrationRepository.delete(target);
-        }
-    }
-
-    @Override
-    public void deleteRegistrationRequest(EnteNode ente, ThirdPartyRegistrationRequest target) {
-        ente.getRegistrationRequests().remove(ente.getRegistrationRequests()
-                .stream()
-                .filter(r -> r.getRequest().equals(target))
-                .findAny()
-                .orElseThrow(NullPointerException::new));
-        this.enteRepository.save(ente);
-    }
-
     @Override
     public EnteRepository getRepository() {
         return this.enteRepository;
