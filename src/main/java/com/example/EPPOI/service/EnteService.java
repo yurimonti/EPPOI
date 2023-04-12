@@ -8,8 +8,6 @@ import com.example.EPPOI.repository.EnteRepository;
 import com.example.EPPOI.utility.ItineraryForm;
 import com.example.EPPOI.utility.PoiForm;
 
-import java.util.List;
-
 public interface EnteService extends AppUserService<EnteNode> {
     PoiNode createPoi(EnteNode ente,PoiForm form);
     void deletePoi(EnteNode ente,Long toDelete);
@@ -19,6 +17,7 @@ public interface EnteService extends AppUserService<EnteNode> {
     void setConsensusToItinerary(EnteNode ente,ItineraryRequestNode target,boolean consensus);
     EnteRepository getRepository();
     void setConsensusToPoiRequest(EnteNode ente,Long idRequest,Boolean consensus);
+    void setConsensusToPoiRequestThird(EnteNode ente, Long idRequest, Boolean consensus);
     ItineraryRequestNode createItineraryRequest(EnteNode ente, ItineraryForm itineraryForm);
     void deleteItinerary(EnteNode ente,Long itineraryId)throws NullPointerException,IllegalArgumentException;
 }

@@ -34,10 +34,10 @@ public class SecurityConfig{
         http.cors().configure(http);
         http.authorizeHttpRequests().antMatchers("/pois").permitAll();
         http.authorizeHttpRequests().antMatchers("/auth/**").permitAll();
-        http.authorizeHttpRequests().antMatchers("/thirds/**").permitAll(); //TODO fixme later
         http.authorizeHttpRequests().antMatchers("/user/**").authenticated();
         http.authorizeHttpRequests().antMatchers("/tourist/**").hasAnyAuthority("TOURIST");
         http.authorizeHttpRequests().antMatchers("/ente/**").hasAnyAuthority("ENTE");
+        http.authorizeHttpRequests().antMatchers("/third/**").hasAnyAuthority("THIRD_PARTY");
         http.httpBasic().disable();
         http.addFilterBefore(new CustomAuthorizationFilter(),UsernamePasswordAuthenticationFilter.class);
         return http.build();

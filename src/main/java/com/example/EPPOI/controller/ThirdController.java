@@ -2,8 +2,10 @@ package com.example.EPPOI.controller;
 
 
 import com.example.EPPOI.model.RequestPoiNode;
+import com.example.EPPOI.model.ThirdPartyPoiRequest;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.ThirdUserNode;
+import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.repository.ThirdRepository;
 import com.example.EPPOI.repository.UserRoleRepository;
 import com.example.EPPOI.service.ThirdsService;
@@ -30,17 +32,6 @@ public class ThirdController {
         this.middlewareToken = new MiddlewareToken<>(thirdsService.getRepository());
     }
 
-    /**
-     * Get all the third poi requests owned by the user requesting them
-     * @param request the http request
-     * @return the list of third poi request
-     */
-    @PostMapping("/pois") //TODO control if is better to pass them with a dtos
-    public ResponseEntity<?> getOwnedPoiRequest(HttpServletRequest request) {
-        ThirdUserNode thirdUserNode = this.middlewareToken.getUserFromToken(request);
-        return ResponseEntity.ok(thirdUserNode.getPoiRequests());
-    }
-
 
     /**
      * Get all the third pois owned by the user requesting them
@@ -54,16 +45,27 @@ public class ThirdController {
     }
 
     /**
-     * Create a basic Poi Request for an Ente
+     * Get all the requests of the user
+     * @param request the http request
+     * @return the list of the request of the user as DTOs
+     */
+    @GetMapping("/poi-requests")
+    public ResponseEntity<?> getRequests(HttpServletRequest request){
+        ThirdUserNode thirdUserNode = this.middlewareToken.getUserFromToken(request);
+        return ResponseEntity.ok(this.thirdsService.getAllRequestDTOs(thirdUserNode));
+    }
+
+    /**
+     * Create a third POI request with the basic information passed for an Ente
      * @param request the http request
      * @param form the form with the information
      * @param cityId the id of the city
      * @return the resulting request
      */
-    @PostMapping("/poi-request") //TODO fixme
+    @PostMapping("/poi-request")
     public ResponseEntity<?> createPoiRequest(HttpServletRequest request, @RequestBody PoiForm form, @RequestParam Long cityId) {
         ThirdUserNode thirdUserNode = this.middlewareToken.getUserFromToken(request);
-        RequestPoiNode result = this.thirdsService.createRequestPoi(thirdUserNode, form, cityId);
+        ThirdPartyPoiRequest result = this.thirdsService.createRequestPoi(thirdUserNode, form, cityId);
         return ResponseEntity.ok(result);
     }
 
@@ -74,7 +76,7 @@ public class ThirdController {
      * @param id the id of the poi
      * @return the modified poi
      */
-    @PostMapping("/poi/modify-primary/{id}") //TODO
+    @PostMapping("/poi/modify-primary/{id}")
     public ResponseEntity<?> modifyPoi(HttpServletRequest request, @RequestBody PoiForm form,
                                        @PathVariable String id) {
         ThirdUserNode thirdUserNode = this.middlewareToken.getUserFromToken(request);

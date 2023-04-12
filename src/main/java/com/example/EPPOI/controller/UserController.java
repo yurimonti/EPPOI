@@ -56,7 +56,7 @@ public class UserController {
         return ResponseEntity.ok(this.cityService.getAllCities().stream().map(CityDTO::new).toList());
     }
 
-    @GetMapping("/pois/{id}")
+    @GetMapping("/pois/{id}") //TODO controllare per poi terzi
     public ResponseEntity<PoiDTO> getPoi(@PathVariable String id){
         PoiNode poi;
         try{
@@ -95,10 +95,10 @@ public class UserController {
     public ResponseEntity<List<PoiTypeDTO>> getPoiTypesFiltered(@RequestBody List<CategoryDTO> categories){
         List<PoiTypeNode> types;
         if(categories.size() >0)
-        types = this.poiTypeRepository.findAll().stream()
-                .filter(t->t.getCategories().stream().map(CategoryNode::getId).toList()
-                        .containsAll(categories.stream().map(CategoryDTO::getId).toList()))
-                .toList();
+            types = this.poiTypeRepository.findAll().stream()
+                    .filter(t->t.getCategories().stream().map(CategoryNode::getId).toList()
+                            .containsAll(categories.stream().map(CategoryDTO::getId).toList()))
+                    .toList();
         else types = this.poiTypeRepository.findAll();
         return ResponseEntity.ok(types.stream().map(this.typeDtoManager::getDtofromEntity).toList());
     }

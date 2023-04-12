@@ -7,6 +7,7 @@ import com.example.EPPOI.model.user.TouristNode;
 import com.example.EPPOI.model.user.UserNode;
 import com.example.EPPOI.model.user.UserRoleNode;
 import com.example.EPPOI.repository.RequestPoiRepository;
+import com.example.EPPOI.repository.ThirdPartyPoiRequestRepository;
 import com.example.EPPOI.service.dtoManager.DtoEntityManager;
 import com.example.EPPOI.utility.PoiForm;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class PoiRequestServiceImpl implements PoiRequestService {
-    private final GeneralUserService generalUserService;
     private final RequestPoiRepository requestPoiRepository;
+    private final ThirdPartyPoiRequestRepository thirdPartyPoiRequestRepository;
     private final CityService cityService;
     private final DtoEntityManager<PoiTagRel, PoiTagRelDTO> poiTagRelDTOManager;
     private final DtoEntityManager<CoordsNode, CoordsDTO> coordsDtoManager;
@@ -72,8 +73,32 @@ public class PoiRequestServiceImpl implements PoiRequestService {
         return result;
     }
 
+    /**
+     * Create a third party poi request from the information in a poi form
+     * @param form the poi form
+     * @return the third party request
+     */
     @Override
-    public PoiRequestDTO getDTOfromRequest(RequestPoiNode from) {
+    public ThirdPartyPoiRequest createThirdPoiRequestFromParams(PoiForm form) {
+        ThirdPartyPoiRequest result = new ThirdPartyPoiRequest();
+        result.setName(form.getName());
+        result.setDescription(form.getDescription());
+        result.setCoordinate(this.coordsDtoManager.getEntityfromDto(form.getCoordinate()));
+        form.getTagValues().forEach(t -> result.getTagValues().add(this.poiTagRelDTOManager.getEntityfromDto(t)));
+        form.getTypes().forEach(t -> result.getTypes().add(this.typeDtoManager.getEntityfromDto(t)));
+        result.setAddress(this.addressDtoManager.getEntityfromDto(form.getAddress()));
+        result.setContact(this.contactDtoManager.getEntityfromDto(form.getContact()));
+        result.setHours(this.timeDtoManager.getEntityfromDto(form.getTimeSlot()));
+
+        this.thirdPartyPoiRequestRepository.save(result);
+        return result;
+    }
+
+
+
+
+    @Override
+    public PoiRequestDTO getDTOFromRequest(RequestPoiNode from) {
         /*List<? extends UserNode> t = this.generalUserService.getUsers()
                 .stream()
                 .filter(u -> u.getRoles().stream().map(UserRoleNode::getName).toList().contains("TOURIST"))
@@ -112,9 +137,26 @@ public class PoiRequestServiceImpl implements PoiRequestService {
                 new ContactDTO(from.getContact()), tagRelDTOs);
     }
 
+    /**
+     * This method create a DTO for a third party poi request
+     * @param request the ThirdPartyPoiRequest
+     * @return the DTO of the request
+     */
     @Override
-    public RequestPoiNode getRequestfromDTO(PoiRequestDTO from) {
-
-        return null;
+    public ThirdPoiRequestDTO getDTOFromThirdRequest(ThirdPartyPoiRequest request) {
+        List<PoiTagRelDTO> tagRelDTOs = request.getTagValues().stream().map(PoiTagRelDTO::new).toList();
+        List<PoiTypeDTO> poiTypeDTOs = request.getTypes().stream().map(PoiTypeDTO::new).toList();
+        StatusEnum status;
+        Boolean isAccepted = request.getIsAccepted();
+        if (Objects.isNull(isAccepted)) status = StatusEnum.PENDING;
+        else {
+            if (isAccepted) {
+                status = StatusEnum.ACCEPTED;
+            } else status = StatusEnum.REJECTED;
+        }
+        return new ThirdPoiRequestDTO(request.getId(), status, request.getName(), request.getDescription(),
+                new CoordsDTO(request.getCoordinate()), new TimeSlotDTO(request.getHours()),
+                new AddressDTO(request.getAddress()), poiTypeDTOs,
+                new ContactDTO(request.getContact()), tagRelDTOs);
     }
 }

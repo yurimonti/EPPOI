@@ -1,5 +1,6 @@
 package com.example.EPPOI.dto;
 
+import com.example.EPPOI.model.ThirdsElements.Menu;
 import com.example.EPPOI.model.poi.PoiNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,14 @@ public class PoiDTO {
     private List<PoiTypeDTO> types;
     private ContactDTO contact;
     private List<PoiTagRelDTO> tagValues;
+
+    //TODO Elements for thirds
+    private boolean isThird;
+
+    private Menu menu;
+
+
+
 
     public PoiDTO(PoiNode poi){
         this.id = poi.getId();

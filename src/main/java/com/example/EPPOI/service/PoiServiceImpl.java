@@ -15,7 +15,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -82,7 +81,7 @@ public class PoiServiceImpl implements PoiService {
     }
 
     @Override
-    public PoiNode createPoiFromParams(PoiForm form) { //TODO probabilmente qui la creazione non serve
+    public PoiNode createPoiFromParams(PoiForm form) {
         List<PoiTypeNode> types = form.getTypes().stream().map(this.typeDtoManager::getEntityfromDto).toList();
         log.info("types : {}",types);
         List<CategoryNode> categories = new ArrayList<>();
@@ -95,15 +94,13 @@ public class PoiServiceImpl implements PoiService {
         log.info("ristorazione : {}",ristorazione);
         CategoryNode mobility = this.categoryRepository.findByName("Mobilità");
         log.info("mobilità : {}",mobility);
-        if (!Objects.isNull(ristorazione) && categoriesId.contains(ristorazione.getId())){
+        if (!Objects.isNull(ristorazione) && categoriesId.contains(ristorazione.getId()))
             return this.abstractFactoryPoi.createRestaurantPoi(form.getName(), form.getDescription(),
                     this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
                     this.timeDtoManager.getEntityfromDto(form.getTimeSlot()),
                     form.getTimeToVisit(), this.addressDtoManager.getEntityfromDto(form.getAddress()),
                     form.getTicketPrice(),types, this.contactDtoManager.getEntityfromDto(form.getContact()),
                     tagValues);
-        }
-
         if (!Objects.isNull(mobility) && categoriesId.contains(mobility.getId()))
             return this.abstractFactoryPoi.createEvPoi(form.getName(), form.getDescription(),
                     this.coordsDtoManager.getEntityfromDto(form.getCoordinate()),
@@ -268,4 +265,31 @@ public class PoiServiceImpl implements PoiService {
     public List<PoiNode> getAllPois() {
         return this.poiRepository.findAll();
     }
+
+
+    //------------------------------------  THIRD MANAGEMENT ---------------------------------------------
+
+    /**
+     * Create a poi from a third party poi request
+     * @param toSet the request
+     * @return the created poi
+     */
+    @Override
+    public PoiNode poiFromThirdRequest(ThirdPartyPoiRequest toSet) {
+        PoiNode result = new PoiNode();
+        result.setName(toSet.getName());
+        result.setDescription(toSet.getDescription());
+        result.setTimeToVisit(null);
+        result.setTicketPrice(null);
+        result.setCoordinate(toSet.getCoordinate());
+        toSet.getTagValues().forEach(t -> result.getTagValues().add(t));
+        toSet.getTypes().forEach(t -> result.getTypes().add(t));
+        result.setAddress(toSet.getAddress());
+        result.setContact(toSet.getContact());
+        result.setHours(toSet.getHours());
+        this.savePoi(result);
+        return result;
+    }
+
+
 }

@@ -68,10 +68,10 @@ public class ItineraryServiceImpl implements ItineraryService{
         return this.itineraryRepository.findAll()
                 .stream()
                 .filter(i -> i.getPoints()
-                    .stream()
-                    .map(ItineraryRelPoi::getPoi)
-                    .map(PoiNode::getId)
-                    .anyMatch(p-> p.equals(poi.getId())))
+                        .stream()
+                        .map(ItineraryRelPoi::getPoi)
+                        .map(PoiNode::getId)
+                        .anyMatch(p-> p.equals(poi.getId())))
                 .toList();
     }
 

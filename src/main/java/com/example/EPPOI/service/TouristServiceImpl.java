@@ -170,7 +170,7 @@ public class TouristServiceImpl implements TouristService {
 
     @Override
     public List<PoiRequestDTO> getAllRequestDTOs(TouristNode tourist) {
-        return tourist.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList();
+        return tourist.getPoiRequests().stream().map(this.poiRequestService::getDTOFromRequest).toList();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.example.EPPOI.dto.PoiDTO;
 import com.example.EPPOI.dto.PoiRequestDTO;
 import com.example.EPPOI.model.CityNode;
 import com.example.EPPOI.model.RequestPoiNode;
+import com.example.EPPOI.model.ThirdPartyPoiRequest;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.utility.PoiForm;
 import org.springframework.stereotype.Service;
@@ -28,4 +29,6 @@ public interface PoiService {
 
     PoiNode savePoi(PoiNode toSave);
     List<PoiNode> getAllPois();
+
+    PoiNode poiFromThirdRequest(ThirdPartyPoiRequest toSet);
 }

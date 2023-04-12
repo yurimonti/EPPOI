@@ -14,7 +14,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class RestaurantPoiNode extends PoiNode{
-
     private Menu menu;
 
     public RestaurantPoiNode(String name, String description, CoordsNode coordinate, TimeSlotNode hours,

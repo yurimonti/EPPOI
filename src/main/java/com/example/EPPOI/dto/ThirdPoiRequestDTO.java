@@ -1,23 +1,24 @@
-package com.example.EPPOI.utility;
+package com.example.EPPOI.dto;
 
-import com.example.EPPOI.dto.*;
-import com.example.EPPOI.model.PoiTypeNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-public class PoiForm{
-    private Long idPoi;
+@AllArgsConstructor
+@NoArgsConstructor
+public class ThirdPoiRequestDTO {
+    private Long id;
+    private StatusEnum status;
     private String name;
     private String description;
     private CoordsDTO coordinate;
-    private TimeSlotDTO timeSlot;
+    private TimeSlotDTO hours;
     private AddressDTO address;
-    private Double timeToVisit;
-    private Double ticketPrice;
     private List<PoiTypeDTO> types;
     private ContactDTO contact;
     private List<PoiTagRelDTO> tagValues;
 }
+

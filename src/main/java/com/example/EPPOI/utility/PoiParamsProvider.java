@@ -25,8 +25,8 @@ public class PoiParamsProvider {
     private List<PoiTagRel> tagValues;
 
     private PoiParamsProvider(String name, String description, CoordsDTO coordinate, TimeSlotNode hours,
-                                           Double timeToVisit, AddressNode address, Double ticketPrice, List<PoiTypeNode> types,
-                                           ContactNode contact, List<PoiTagRel> tagValues) {
+                              Double timeToVisit, AddressNode address, Double ticketPrice, List<PoiTypeNode> types,
+                              ContactNode contact, List<PoiTagRel> tagValues) {
         this.name = name;
         this.description = description;
         this.coordinate = coordinate;
@@ -46,8 +46,8 @@ public class PoiParamsProvider {
     }
 
     public static PoiParamsProvider getFromParams(String name, String description, CoordsDTO coordinate, TimeSlotNode hours,
-                             Double timeToVisit, AddressNode address, Double ticketPrice, List<PoiTypeNode> types,
-                             ContactNode contact, List<PoiTagRel> tagValues) {
+                                                  Double timeToVisit, AddressNode address, Double ticketPrice, List<PoiTypeNode> types,
+                                                  ContactNode contact, List<PoiTagRel> tagValues) {
         return new PoiParamsProvider(name,description,coordinate,hours,timeToVisit,address,ticketPrice,types,contact,tagValues);
     }
 

@@ -67,6 +67,7 @@ public class EnteController {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         List<ItineraryRequestDTO> requests = ente.getItineraryRequests().stream()
                 .map(ItineraryRequestRel::getRequest)
+                .filter(i -> !i.getAccepted() && i.getConsensus()>0)
                 .map(this.itineraryRequestDTOManager::getDtofromEntity)
                 .toList();
         return ResponseEntity.ok(requests);
@@ -185,11 +186,11 @@ public class EnteController {
     @GetMapping("/poi-requests")
     public ResponseEntity<?> getPoiRequests(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
-        return ResponseEntity.ok(ente.getPoiRequests().stream().map(this.poiRequestService::getDTOfromRequest).toList());
+        return ResponseEntity.ok(ente.getPoiRequests().stream().map(this.poiRequestService::getDTOFromRequest).toList());
     }
 
     @GetMapping("/poi-requests/{id}")
-    public ResponseEntity<?> getPoiRequests(HttpServletRequest request,@PathVariable String id) {
+    public ResponseEntity<?> getPoiRequest(HttpServletRequest request,@PathVariable String id) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         Long idRequest = Long.parseLong(id);
         Map<String, String> errors = new HashMap<>();
@@ -200,7 +201,7 @@ public class EnteController {
                 return new ResponseEntity<>(errors,HttpStatus.FORBIDDEN);
             }
             return ResponseEntity.ok(
-                    this.poiRequestService.getDTOfromRequest(this.poiRequestService.getRequestById(idRequest)));
+                    this.poiRequestService.getDTOFromRequest(this.poiRequestService.getRequestById(idRequest)));
         }catch(Exception e){
             if (Objects.equals(e.getClass(), NullPointerException.class)) {
                 errors.put("error",e.getMessage());
@@ -220,8 +221,8 @@ public class EnteController {
     }
 
     @PostMapping("/poi-requests/{id}")
-    public ResponseEntity<?> acceptPoiRequests(HttpServletRequest request,@PathVariable String id,
-                                               @RequestBody PoiForm form) {
+    public ResponseEntity<?> modifyRequest(HttpServletRequest request,@PathVariable String id,
+                                           @RequestBody PoiForm form) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
         Long idRequest = Long.parseLong(id);
         try{
@@ -237,15 +238,21 @@ public class EnteController {
         }
     }
 
-    //------------------------- THIRD  ------------------------------------------------
+    //------------------------- THIRD ------------------------------------------------
 
-    @GetMapping("/poi-requests-thirds") //TODO vedere se serve e in caso fix
+    @GetMapping("/poi-requests-thirds")
     public ResponseEntity<?> getPoiRequestsThirds(HttpServletRequest request) {
         EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        return ResponseEntity.ok(ente.getThirdsPoiRequests().stream()
+                .map(this.poiRequestService::getDTOFromThirdRequest).toList());
+    }
 
-        return ResponseEntity.ok(ente.getPoiRequests().stream()
-                .filter(r -> r.getTypes().stream().map(PoiTypeNode::getName).toList().contains("Restaurant"))
-                //TODO add more if needed
-                .map(this.poiRequestService::getDTOfromRequest).toList());
+    @PostMapping("/poi-requests-third")
+    public ResponseEntity<?> acceptPoiRequestsThird(HttpServletRequest request, @RequestBody Map<String, ?> body) {
+        EnteNode ente = this.middlewareToken.getUserFromToken(request);
+        boolean consensus = (boolean) body.get("consensus");
+        Long idRequest = Long.parseLong((String) body.get("idRequest"));
+        this.enteService.setConsensusToPoiRequestThird(ente, idRequest, consensus);
+        return ResponseEntity.ok().build();
     }
 }

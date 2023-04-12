@@ -3,6 +3,7 @@ package com.example.EPPOI.service;
 import com.example.EPPOI.model.*;
 import com.example.EPPOI.model.poi.PoiNode;
 import com.example.EPPOI.model.user.EnteNode;
+import com.example.EPPOI.model.user.ThirdUserNode;
 import com.example.EPPOI.model.user.UserRoleNode;
 import com.example.EPPOI.repository.*;
 import com.example.EPPOI.utility.ItineraryForm;
@@ -27,7 +28,6 @@ public class EnteServiceImpl implements EnteService {
     private final PoiRequestService poiRequestService;
     private final PoiService poiService;
     private final ItineraryService itineraryService;
-
     private final ThirdsService thirdsService;
 
     //------------------------------------  POIs -----------------------------------------------------------------
@@ -69,14 +69,10 @@ public class EnteServiceImpl implements EnteService {
         this.poiRequestService.saveRequest(toSet);
         PoiNode result;
         if (Objects.isNull(toSet.getTarget())){
-            if(this.isThirdRequest(toSet.getCreatedBy())){
-                result = this.thirdsService.createThirdPoiFromForm(ente,toSet,form);
-            }
-            else{
-                result = this.createPoi(ente, form);
-            }
+            result = this.createPoi(ente, form);
         }
         else result = this.modifyPoi(ente, form, toSet.getTarget().getId());
+
         result.getContributors().add(toSet.getCreatedBy());
         this.poiService.savePoi(result);
     }
@@ -88,14 +84,7 @@ public class EnteServiceImpl implements EnteService {
             //if it's in pending
             if (Objects.isNull(toSet.getIsAccepted())) {
                 toSet.setIsAccepted(true);
-
-                PoiNode poi;
-                if(this.isThirdRequest(toSet.getCreatedBy())){
-                    poi = this.thirdsService.createPoiFromRequest(toSet);
-                }
-                else{
-                    poi = this.poiService.poiFromRequest(toSet);
-                }
+                PoiNode poi = this.poiService.poiFromRequest(toSet);
                 CityNode city = ente.getCity();
                 if (city.getPOIs()
                         .stream()
@@ -104,18 +93,10 @@ public class EnteServiceImpl implements EnteService {
                     city.getPOIs().add(poi);
                     this.cityService.saveCity(city);
                 }
-
             }
         } else toSet.setIsAccepted(false);
         this.poiRequestService.saveRequest(toSet);
     }
-
-    private boolean isThirdRequest(String createdBy){
-        return this.thirdsService.isThirdUser(createdBy);
-    }
-
-
-
 
     //------------------------------------  ITINERARIES ----------------------------------------------------------
     @Override
@@ -213,11 +194,36 @@ public class EnteServiceImpl implements EnteService {
         this.itineraryService.saveItinerary(target);
     }
 
-    //------------------------------------  THIRD USER MANAGEMENT ---------------------------------------------
+    //------------------------------------  THIRD MANAGEMENT ---------------------------------------------
 
-    //TODO
+    /**
+     * Set the consensus to a third party poi request, if true a poi node is created from the
+     * information in the request
+     * @param ente the ente setting the consensus
+     * @param idRequest the id of the request
+     * @param consensus the consensus value, true if accepted, denied otherwise
+     */
+    @Override
+    public void setConsensusToPoiRequestThird(EnteNode ente, Long idRequest, Boolean consensus) {
+        ThirdPartyPoiRequest toSet = this.thirdsService.getRequestById(idRequest);
+        if (consensus) {
+            //if it's in pending
+            if (Objects.isNull(toSet.getIsAccepted())) {
+                toSet.setIsAccepted(true);
+                PoiNode poi = this.thirdsService.createPoiFromRequest(toSet);
 
-
+                CityNode city = ente.getCity();
+                if (city.getPOIs()
+                        .stream()
+                        .map(PoiNode::getId)
+                        .noneMatch(id -> poi.getId().equals(id))) {
+                    city.getPOIs().add(poi);
+                    this.cityService.saveCity(city);
+                }
+            }
+        } else toSet.setIsAccepted(false);
+        this.thirdsService.saveRequest(toSet);
+    }
 
 
     //------------------------------------  OTHER ---------------------------------------------
@@ -225,7 +231,6 @@ public class EnteServiceImpl implements EnteService {
     public EnteRepository getRepository() {
         return this.enteRepository;
     }
-
 
     @Override
     public EnteNode getUserByUsername(String username) throws NullPointerException {
